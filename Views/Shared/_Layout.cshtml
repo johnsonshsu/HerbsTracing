@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>科達製藥中藥材溯源系統</title>
+    <link rel="stylesheet" href="@Url.Content("~/lib/jqueryui/themes/base/jquery-ui.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap-icons/font/bootstrap-icons.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/toastr.js/toastr.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/datepicker/datepicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/datepicker/timepicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/font-awesome/css/all.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/flag-icons/css/flag-icons.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap-select/css/bootstrap-select.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/limonte-sweetalert2/sweetalert2.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/dashboard.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/home.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/site.css")" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+</head>
+
+<body>
+    <header class="navbar navbar-light sticky-top bg-success flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0" href="@Url.Action("Index", "Home", new { area = "" })">
+            <table>
+                <tr>
+                    <td class="text-white" style="background-color:transparent;">
+                        <img src="@Url.Content("~/images/Official/logo.jpg")" alt="科達製藥"
+                            class="d-inline-block align-text-top" />
+                    </td>
+                    <td class="pt-2 ps-2 fs-3 text-white" style="background-color:transparent;">Koda 科達製藥<br />中藥材溯源系統
+                    </td>
+                </tr>
+            </table>
+        </a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="ms-5">
+            <input id="search" name="search" class="form-control" type="text" placeholder="請輸入溯源碼" aria-label="Search"
+                style="width: 300px;">
+        </div>
+        <div class="input-group ms-2">
+            <input type="submit" class="btn btn-outline-light" value="查詢" />
+        </div>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="#">
+                    <img src="@Url.Content("~/images/Official/login.png")" alt="登入" title="登入" width="40" />
+                </a>
+            </div>
+        </div>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Map", "Home", new { area = "" })">
+                                <img src="@Url.Content("~/images/Official/default_map.png")" alt="產地地圖"
+                                    class="img-fluid" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Video", "Home", new { area = "" })">
+                                <img src="@Url.Content("~/images/Official/default_video.png")" alt="栽種影片"
+                                    class="img-fluid" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Flow", "Home", new { area = "" })">
+                                <img src="@Url.Content("~/images/Official/default_flow.png")" alt="履歷流程"
+                                    class="img-fluid" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Item", "Home", new { area = "", id = "A" })">
+                                <img src="@Url.Content("~/images/Official/default_item.png")" alt="藥材簡介"
+                                    class="img-fluid" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Food", "Home", new { area = "", id = "A" })">
+                                <img src="@Url.Content("~/images/Official/default_food.png")" alt="藥材食譜"
+                                    class="img-fluid" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Tester", "Home", new { area = "" })">
+                                <img src="@Url.Content("~/images/Official/default_tester.png")" alt="檢驗中心"
+                                    class="img-fluid" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

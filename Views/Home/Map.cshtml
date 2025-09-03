@@ -1,0 +1,340 @@
+@{
+    ViewData["Title"] = "產地地圖";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header text-white bg-success">
+                    <h5 class="card-title">地圖設定</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="dataSource" class="form-label fs-5">資料來源</label>
+                        <select class="form-select" id="dataSource">
+                            <option value="">請選擇資料來源</option>
+                            <option value="P">契作產地分佈</option>
+                            <option value="F">藥材產地分佈</option>
+                            <option value="V">科達推薦分佈</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="searchType" class="form-label fs-5">搜尋方式</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="searchType" id="searchByAddress"
+                                value="address" checked>
+                            <label class="form-check-label" for="searchByAddress">
+                                依地址搜尋
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="searchType" id="searchByCoordinates"
+                                value="coordinates">
+                            <label class="form-check-label" for="searchByCoordinates">
+                                依經緯度搜尋
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" id="loadMapData">載入地圖資料</button>
+                    <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="clearMarkers">清除標記</button>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header text-white bg-success">
+                    <h6 class="card-title">載入狀態</h6>
+                </div>
+                <div class="card-body">
+                    <div id="loadingStatus" class="text-muted">準備就緒</div>
+                    <div class="progress mt-2" style="display: none;" id="loadingProgress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                            style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header text-white bg-success d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Google 地圖</h5>
+                    <small class="text-white" id="markerCount">標記數量: 0</small>
+                </div>
+                <div class="card-body p-0">
+                    <div id="map" style="height: 600px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Google Maps API -->
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTaKcRPoTekhPhuHebkl2_I_qAvY-YwkE&callback=initMap&libraries=geometry"></script>
+
+<script>
+    let map;
+    let markers = [];
+    let infoWindows = [];
+
+    // 初始化 Google 地圖
+    function initMap() {
+        const defaultCenter = { lat: 23.8, lng: 121.0 }; // 台灣中心點
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 8,
+            center: defaultCenter,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+            zoomControl: true,
+        });
+
+        updateLoadingStatus("地圖初始化完成");
+    }
+
+    // 載入地圖資料
+    document.getElementById('loadMapData').addEventListener('click', function () {
+        const dataSource = document.getElementById('dataSource').value;
+        const searchType = document.querySelector('input[name="searchType"]:checked').value;
+
+        if (!dataSource) {
+            alert('請選擇資料來源');
+            return;
+        }
+
+        loadMapData(dataSource, searchType);
+    });
+
+    // 清除所有標記
+    document.getElementById('clearMarkers').addEventListener('click', function () {
+        clearAllMarkers();
+        updateMarkerCount();
+        updateLoadingStatus("已清除所有標記");
+    });
+
+    // AJAX 載入地圖資料
+    function loadMapData(dataSource, searchType) {
+        showLoading(true);
+        updateLoadingStatus("正在載入資料...");
+
+        $.ajax({
+            url: '@Url.Action("GetMapData", "Home")',
+            type: 'GET',
+            data: {
+                dataSource: dataSource,
+                searchType: searchType
+            },
+            beforeSend: function () {
+                $('#loadMapData').prop('disabled', true);
+                updateProgressBar(10);
+            },
+            success: function (response) {
+                updateProgressBar(50);
+
+                if (response.success && response.data) {
+                    clearAllMarkers();
+                    processMapData(response.data, searchType);
+                    updateLoadingStatus(`成功載入 ${response.data.length} 筆資料`);
+                    updateProgressBar(100);
+                } else {
+                    updateLoadingStatus("載入失敗: " + (response.message || "未知錯誤"));
+                    alert('載入資料失敗: ' + (response.message || "請檢查後端設定"));
+                }
+            },
+            error: function (xhr, status, error) {
+                updateLoadingStatus("載入錯誤: " + error);
+                alert('載入資料時發生錯誤: ' + error);
+            },
+            complete: function () {
+                showLoading(false);
+                $('#loadMapData').prop('disabled', false);
+                setTimeout(() => updateProgressBar(0), 1000);
+            }
+        });
+    }
+
+    // 處理地圖資料
+    function processMapData(data, searchType) {
+        const bounds = new google.maps.LatLngBounds();
+        let processedCount = 0;
+
+        data.forEach((item, index) => {
+            if (searchType === 'address') {
+                // 使用 Google Geocoding API 將地址轉換為座標
+                geocodeAddress(item.address, item, bounds, () => {
+                    processedCount++;
+                    if (processedCount === data.length) {
+                        fitMapToBounds(bounds);
+                    }
+                });
+            } else if (searchType === 'coordinates') {
+                // 直接使用經緯度
+                addMarker(item, bounds);
+                if (index === data.length - 1) {
+                    fitMapToBounds(bounds);
+                }
+            }
+        });
+    }
+
+    // 地址解析
+    function geocodeAddress(address, item, bounds, callback) {
+        const geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ address: address + ', Taiwan' }, function (results, status) {
+            if (status === 'OK' && results[0]) {
+                const location = results[0].geometry.location;
+                item.lat = location.lat();
+                item.lng = location.lng();
+                addMarker(item, bounds);
+            } else {
+                console.warn('地址解析失敗:', address, status);
+                updateLoadingStatus(`地址解析失敗: ${address}`);
+            }
+            callback();
+        });
+    }
+
+    // 新增地圖標記
+    function addMarker(item, bounds) {
+        const position = { lat: parseFloat(item.lat), lng: parseFloat(item.lng) };
+
+        // 根據資料來源設定不同的圖標
+        const iconUrl = getMarkerIcon(item.type || 'default');
+
+        const marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: item.name || item.title,
+            icon: {
+                url: iconUrl,
+                scaledSize: new google.maps.Size(32, 32),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(16, 32)
+            }
+        });
+
+        // 建立資訊視窗
+        const infoContent = createInfoWindowContent(item);
+        const infoWindow = new google.maps.InfoWindow({
+            content: infoContent
+        });
+
+        marker.addListener('click', function () {
+            // 關閉其他資訊視窗
+            infoWindows.forEach(iw => iw.close());
+            infoWindow.open(map, marker);
+        });
+
+        markers.push(marker);
+        infoWindows.push(infoWindow);
+        bounds.extend(position);
+
+        updateMarkerCount();
+    }
+
+    // 建立資訊視窗內容
+    function createInfoWindowContent(item) {
+        return `
+        <div class="info-window">
+            <h6 class="mb-2">${item.name || item.title}</h6>
+            ${item.address ? `<p class="mb-1"><strong>地址:</strong> ${item.address}</p>` : ''}
+            ${item.lat && item.lng ? `<p class="mb-1"><strong>座標:</strong> ${item.lat}, ${item.lng}</p>` : ''}
+            ${item.phone ? `<p class="mb-1"><strong>電話:</strong> ${item.phone}</p>` : ''}
+            ${item.description ? `<p class="mb-1">${item.description}</p>` : ''}
+        </div>
+    `;
+    }
+
+    // 取得標記圖示
+    function getMarkerIcon(type) {
+        const icons = {
+            'P': 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+            'F': 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            'V': 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            'default': 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+        };
+        return icons[type] || icons['default'];
+    }
+
+    // 調整地圖檢視範圍
+    function fitMapToBounds(bounds) {
+        if (!bounds.isEmpty()) {
+            map.fitBounds(bounds);
+
+            // 如果只有一個點，設定適當的縮放等級
+            if (markers.length === 1) {
+                map.setZoom(15);
+            }
+        }
+    }
+
+    // 清除所有標記
+    function clearAllMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        infoWindows.forEach(infoWindow => infoWindow.close());
+        markers = [];
+        infoWindows = [];
+    }
+
+    // 更新載入狀態
+    function updateLoadingStatus(message) {
+        document.getElementById('loadingStatus').textContent = message;
+    }
+
+    // 顯示/隱藏載入進度條
+    function showLoading(show) {
+        const progress = document.getElementById('loadingProgress');
+        progress.style.display = show ? 'block' : 'none';
+    }
+
+    // 更新進度條
+    function updateProgressBar(percentage) {
+        const progressBar = document.querySelector('.progress-bar');
+        progressBar.style.width = percentage + '%';
+    }
+
+    // 更新標記數量
+    function updateMarkerCount() {
+        document.getElementById('markerCount').textContent = `標記數量: ${markers.length}`;
+    }
+
+    // 頁面載入完成後的初始化
+    $(document).ready(function () {
+        updateLoadingStatus("等待 Google 地圖載入...");
+
+        // 監聽資料來源變更
+        $('#dataSource').change(function () {
+            if (this.value) {
+                updateLoadingStatus(`已選擇資料來源: ${this.options[this.selectedIndex].text}`);
+            }
+        });
+    });
+</script>
+
+<style>
+    .info-window {
+        max-width: 250px;
+    }
+
+    .info-window h6 {
+        color: #0d6efd;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 5px;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    #map {
+        border-radius: 0 0 0.375rem 0.375rem;
+    }
+
+    .progress {
+        height: 4px;
+    }
+</style>

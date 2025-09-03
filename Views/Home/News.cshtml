@@ -1,0 +1,45 @@
+@model herbstracing.Models.z_sys_news
+
+@{
+    ViewData["Title"] = "最新消息明細";
+}
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <div>
+                    <div class="float-start">
+                        <h5>
+                            最新消息
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row fs-5">
+                    <div class="col-md-12">
+                        <span class="fw-bold">標題：</span> @Model.mtitle
+                    </div>
+                </div>
+                <div class="row fs-5">
+                    <div class="col-md-12">
+                        <span class="fw-bold">日期：</span> @Model.mdate
+                    </div>
+                </div>
+                <div class="row fs-5">
+                    <div class="col-md-12">
+                        <span class="fw-bold">內容：</span>
+                    </div>
+                </div>
+                <div class="row fs-5">
+                    <div class="col-md-12">
+                        @Model.mdescribe
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            @Html.ActionLink("回上一頁", ActionService.Index, ActionService.Home, new { area = "" }, new { @class = "btn btn-success mt-2" })   
+        </div>
+    </div>
+</div>

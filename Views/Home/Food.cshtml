@@ -1,0 +1,29 @@
+@model vmFood
+@{
+    ViewData["Title"] = "藥材食譜";
+}
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <div>
+                    <div class="float-start">
+                        <h5>
+                            @ViewData["Title"]
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <h6>食譜類別: @Model.CodeName</h6>
+                <h6>食譜列表:</h6>
+                <ul>
+                    @foreach (var recipe in Model.RecipeList)
+                    {
+                        <li>@recipe.mname</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

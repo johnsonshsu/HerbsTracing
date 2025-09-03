@@ -1,0 +1,78 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@model IEnumerable<herbstracing.Models.z_sys_news>
+
+@{
+    ViewData["Title"] = "首頁";
+}
+
+<div class="py-2">
+    <div class="card border-secondary card-size-max">
+        <div class="card-header bg-secondary text-white">
+            <div>
+                <div class="float-start">
+                    <h5>
+                        最新消息
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mx-1"></div>
+                <div class="col-md-12">
+                    <div class="float-start page-info">
+                        頁數:
+                    </div>
+                    <div class="float-start ms-1">
+                        @Html.PagedListPager((IPagedList)Model, x =>
+                        Url.Action(ActionService.Index, ActionService.Controller, new { area = ActionService.Area, id = x }))
+                    </div>
+                    <div class="float-start ms-1 page-info">
+                        @ViewBag.PageInfo
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>
+
+                            </th>
+                            <th class="fs-5">
+                                @Html.DisplayNameFor(model => model.mdate)
+                            </th>
+                            <th class="fs-5">
+                                @Html.DisplayNameFor(model => model.mtitle)
+                            </th>
+                            <th class="table-wrap fs-5">
+                                @Html.DisplayNameFor(model => model.mshort_describe)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                   @Html.ActionLink(SessionService.GetActionName(enAction.Detail), "News", ActionService.Controller, new
+                                    { area = ActionService.Area, id = item.rowid }, new
+                                    { @class = "btn btn-secondary" })
+                                </td>
+                                <td class="fs-5">
+                                    @Html.DisplayFor(modelItem => item.mdate)
+                                </td>
+                                <td class="fs-5">
+                                    @Html.DisplayFor(modelItem => item.mtitle)
+                                </td>
+                                <td class="table-wrap fs-5">
+                                    @Html.DisplayFor(modelItem => item.mshort_describe)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

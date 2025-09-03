@@ -1,0 +1,485 @@
+@model IEnumerable<herbstracing.Models.z_bas_video>
+@{
+    ViewData["Title"] = "影片庫";
+}
+
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <div>
+                    <div class="float-start">
+                        <h5>
+                            @ViewData["Title"]
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 影片列表 -->
+                <div class="row" id="videoList">
+                    @foreach (var video in Model)
+                    {
+                        <div class="col-md-4 col-sm-6 mb-4">
+                            <div class="card h-100 shadow-sm video-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@video.mtitle</h5>
+                                    <button class="btn btn-primary w-100"
+                                        onclick="playVideo('@video.mfile', '@video.mtitle')" data-bs-toggle="modal"
+                                        data-bs-target="#videoModal">
+                                        <i class="bi bi-play-circle"></i> 播放影片
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- 影片播放 Modal -->
+                <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="videoModalLabel">影片播放</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                    onclick="stopVideo()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="videoContainer" style="width: 100%; height: 600px; background: #000;">
+                                    <!-- 影片播放器將插入這裡 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toast 通知容器 -->
+                <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+                    <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body" id="errorToastMessage">
+                                錯誤訊息
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div id="infoToast" class="toast align-items-center text-bg-info border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body" id="infoToastMessage">
+                                載入中...
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .video-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        #videoContainer {
+            position: relative;
+        }
+    </style>
+}
+
+@section Scripts {
+    <!-- 引入 flv.js 播放器 -->
+    <script src="https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js"></script>
+
+    <script>
+        let flvPlayer = null;
+
+        // 顯示錯誤 Toast 通知
+        function showErrorToast(message) {
+            const toastElement = document.getElementById('errorToast');
+            const toastMessage = document.getElementById('errorToastMessage');
+            toastMessage.textContent = message;
+
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: true,
+                delay: 8000
+            });
+            toast.show();
+        }
+
+        // 顯示資訊 Toast 通知
+        function showInfoToast(message) {
+            const toastElement = document.getElementById('infoToast');
+            const toastMessage = document.getElementById('infoToastMessage');
+            toastMessage.textContent = message;
+
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: true,
+                delay: 3000
+            });
+            toast.show();
+        }
+
+        // 隱藏資訊 Toast
+        function hideInfoToast() {
+            const toastElement = document.getElementById('infoToast');
+            const toast = bootstrap.Toast.getInstance(toastElement);
+            if (toast) {
+                toast.hide();
+            }
+        }
+
+        function playVideo(filename, title) {
+            console.log('開始播放影片:', filename);
+
+            // 顯示載入中提示
+            showInfoToast('正在載入影片...');
+
+            // 更新 Modal 標題
+            document.getElementById('videoModalLabel').textContent = title;
+
+            // 清理之前的播放器
+            if (flvPlayer) {
+                try {
+                    flvPlayer.pause();
+                    flvPlayer.unload();
+                    flvPlayer.detachMediaElement();
+                    flvPlayer.destroy();
+                } catch (e) {
+                    console.error('清理播放器時發生錯誤:', e);
+                }
+                flvPlayer = null;
+            }
+
+            // 清空容器並添加載入提示
+            const container = document.getElementById('videoContainer');
+            container.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border text-light" role="status"><span class="visually-hidden">載入中...</span></div></div>';
+
+            // 延遲一下再建立播放器，確保 DOM 更新
+            setTimeout(function () {
+                // 清空容器
+                container.innerHTML = '';
+
+                // 建立 video 元素
+                const videoElement = document.createElement('video');
+                videoElement.id = 'videoPlayer';
+                videoElement.style.width = '100%';
+                videoElement.style.height = '100%';
+                videoElement.controls = true;
+                container.appendChild(videoElement);
+
+                // 構建完整的影片 URL
+                const videoUrl = '/videos/' + filename;
+                console.log('影片 URL:', videoUrl);
+
+                // 檢查檔案副檔名
+                const fileExtension = filename.split('.').pop().toLowerCase();
+                console.log('檔案類型:', fileExtension);
+
+                // 如果是 MP4 或其他瀏覽器原生支援的格式，直接播放
+                if (fileExtension === 'mp4' || fileExtension === 'webm' || fileExtension === 'ogg') {
+                    console.log('使用原生 HTML5 播放器');
+                    videoElement.src = videoUrl;
+
+                    videoElement.addEventListener('loadedmetadata', function () {
+                        hideInfoToast();
+                    });
+
+                    videoElement.addEventListener('error', function (e) {
+                        console.error('Video 元素播放錯誤:', e);
+                        hideInfoToast();
+
+                        let errorMessage = '影片無法播放：';
+                        if (videoElement.error) {
+                            switch (videoElement.error.code) {
+                                case 1:
+                                    errorMessage += '載入被中止';
+                                    break;
+                                case 2:
+                                    errorMessage += '網路錯誤';
+                                    break;
+                                case 3:
+                                    errorMessage += '解碼錯誤';
+                                    break;
+                                case 4:
+                                    errorMessage += '不支援的格式或找不到檔案';
+                                    break;
+                                default:
+                                    errorMessage += '未知錯誤';
+                            }
+                        }
+
+                        showErrorToast(errorMessage);
+                    });
+
+                    videoElement.play().catch(function (error) {
+                        console.warn('自動播放失敗，請手動點擊播放:', error);
+                        hideInfoToast();
+                    });
+                }
+                // 檢查瀏覽器是否支援 FLV 播放
+                else if (fileExtension === 'flv' && flvjs.isSupported()) {
+                    console.log('使用 FLV.js 播放器');
+                    try {
+                        // 建立 FLV 播放器（優化配置）
+                        flvPlayer = flvjs.createPlayer({
+                            type: 'flv',
+                            url: videoUrl,
+                            hasAudio: true,
+                            hasVideo: true,
+                            isLive: false,
+                            cors: true
+                        }, {
+                            enableWorker: true,  // 啟用 Worker 提升性能
+                            enableStashBuffer: true,  // 啟用緩衝
+                            stashInitialSize: 384,  // 增加初始緩衝大小
+                            lazyLoad: true,  // 啟用延遲載入
+                            lazyLoadMaxDuration: 3 * 60,  // 3分鐘
+                            lazyLoadRecoverDuration: 30,
+                            deferLoadAfterSourceOpen: true,
+                            autoCleanupSourceBuffer: true,
+                            autoCleanupMaxBackwardDuration: 3 * 60,  // 3分鐘
+                            autoCleanupMinBackwardDuration: 60,  // 1分鐘
+                            fixAudioTimestampGap: true,  // 修復音訊時間戳間隙
+                            accurateSeek: true,  // 精確定位
+                            seekType: 'range',  // 使用範圍查找
+                            rangeLoadZeroStart: false,
+                            customSeekHandler: undefined,
+                            reuseRedirectedURL: true,  // 重用重定向 URL
+                            referrerPolicy: 'no-referrer-when-downgrade'
+                        });
+
+                        // 附加到 video 元素
+                        flvPlayer.attachMediaElement(videoElement);
+
+                        // 監聽各種事件
+                        flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function () {
+                            console.log('影片載入完成');
+                            hideInfoToast();
+                        });
+
+                        flvPlayer.on(flvjs.Events.METADATA_ARRIVED, function () {
+                            console.log('影片元數據已到達');
+                            hideInfoToast();
+                        });
+
+                        // 錯誤處理
+                        flvPlayer.on(flvjs.Events.ERROR, function (errorType, errorDetail, errorInfo) {
+                            console.error('FLV 播放錯誤:', {
+                                type: errorType,
+                                detail: errorDetail,
+                                info: errorInfo
+                            });
+
+                            hideInfoToast();
+
+                            let errorMessage = '影片播放失敗：';
+                            let suggestConversion = false;
+
+                            // 根據錯誤類型提供更詳細的錯誤訊息
+                            switch (errorType) {
+                                case flvjs.ErrorTypes.NETWORK_ERROR:
+                                    if (errorDetail === 'HttpStatusCodeInvalid') {
+                                        errorMessage += '找不到影片檔案 (404)';
+                                    } else if (errorDetail === 'ConnectingTimeout') {
+                                        errorMessage += '連線逾時，請檢查網路';
+                                    } else {
+                                        errorMessage += '網路錯誤，請檢查連線';
+                                    }
+                                    break;
+                                case flvjs.ErrorTypes.MEDIA_ERROR:
+                                    if (errorDetail === 'CodecUnsupported') {
+                                        errorMessage += 'FLV 影片編碼不支援（需要 H.264/AAC）';
+                                        suggestConversion = true;
+                                    } else if (errorDetail === 'FormatError') {
+                                        errorMessage += 'FLV 格式錯誤';
+                                        suggestConversion = true;
+                                    } else if (errorDetail === 'DecodingError') {
+                                        errorMessage += '影片解碼失敗';
+                                        suggestConversion = true;
+                                    } else {
+                                        errorMessage += '媒體格式問題';
+                                        suggestConversion = true;
+                                    }
+                                    break;
+                                case flvjs.ErrorTypes.OTHER_ERROR:
+                                    errorMessage += '播放器錯誤';
+                                    break;
+                                default:
+                                    errorMessage += errorType;
+                            }
+
+                            if (errorDetail && !errorMessage.includes(errorDetail)) {
+                                errorMessage += ' (' + errorDetail + ')';
+                            }
+
+                            // 顯示錯誤訊息
+                            showErrorToast(errorMessage);
+
+                            // 如果是編碼問題，提供轉檔建議和備用播放選項
+                            if (suggestConversion) {
+                                setTimeout(function () {
+                                    container.innerHTML = `
+                                                <div class="alert alert-warning m-3">
+                                                    <h5>影片格式不相容</h5>
+                                                    <p>此 FLV 影片使用的編碼格式不被支援。</p>
+                                                    <hr>
+                                                    <p><strong>建議解決方案：</strong></p>
+                                                    <ul>
+                                                        <li>將影片轉換為 H.264 視訊編碼 + AAC 音訊編碼的 FLV 格式</li>
+                                                        <li>或轉換為 MP4 格式（推薦）</li>
+                                                    </ul>
+                                                    <div class="mt-3">
+                                                        <button class="btn btn-primary btn-sm" onclick="tryDirectPlayback('${filename}', '${title}')">
+                                                            <i class="bi bi-play-circle"></i> 嘗試直接播放
+                                                        </button>
+                                                        <button class="btn btn-secondary btn-sm ms-2" onclick="downloadVideo('${filename}')">
+                                                            <i class="bi bi-download"></i> 下載影片
+                                                        </button>
+                                                    </div>
+                                                    <p class="mb-0 mt-2"><small>請聯絡系統管理員處理影片轉檔。</small></p>
+                                                </div>`;
+                                }, 500);
+                            }
+                        });
+
+                        // 載入影片
+                        flvPlayer.load();
+
+                        // 嘗試自動播放
+                        flvPlayer.play().catch(function (e) {
+                            console.warn('自動播放失敗，可能需要使用者互動:', e);
+                            hideInfoToast();
+                            // 不顯示錯誤，因為使用者可以手動點擊播放
+                        });
+
+                    } catch (error) {
+                        console.error('建立 FLV 播放器時發生錯誤:', error);
+                        hideInfoToast();
+                        showErrorToast('無法建立播放器：' + error.message);
+                    }
+                }
+                // 處理 SWF 檔案
+                else if (fileExtension === 'swf') {
+                    hideInfoToast();
+                    container.innerHTML = '<div class="alert alert-warning m-3">SWF (Flash) 格式已不再被瀏覽器支援。請聯絡管理員將影片轉換為 MP4 或 FLV 格式。</div>';
+                    showErrorToast('SWF 格式已不再支援，請使用 MP4 或 FLV 格式');
+                }
+                else {
+                    // 不支援的格式或 FLV.js 不可用
+                    if (fileExtension === 'flv' && !flvjs.isSupported()) {
+                        console.log('瀏覽器不支援 FLV.js');
+                        hideInfoToast();
+                        container.innerHTML = '<div class="alert alert-warning m-3">您的瀏覽器不支援 FLV 格式播放。建議使用最新版的 Chrome、Firefox 或 Edge 瀏覽器。</div>';
+                        showErrorToast('瀏覽器不支援 FLV 格式，請使用 Chrome、Firefox 或 Edge');
+                    } else {
+                        // 未知格式，嘗試直接播放
+                        console.log('未知格式，嘗試使用原生播放器');
+                        videoElement.src = videoUrl;
+
+                        videoElement.addEventListener('loadedmetadata', function () {
+                            hideInfoToast();
+                        });
+
+                        videoElement.addEventListener('error', function (e) {
+                            console.error('Video 元素播放錯誤:', e);
+                            hideInfoToast();
+
+                            let errorMessage = '影片無法播放：';
+                            if (videoElement.error) {
+                                switch (videoElement.error.code) {
+                                    case 1:
+                                        errorMessage += '載入被中止';
+                                        break;
+                                    case 2:
+                                        errorMessage += '網路錯誤，請檢查檔案是否存在';
+                                        break;
+                                    case 3:
+                                        errorMessage += '解碼錯誤，檔案可能損壞';
+                                        break;
+                                    case 4:
+                                        errorMessage += '不支援的格式 (' + fileExtension + ')';
+                                        break;
+                                    default:
+                                        errorMessage += '未知錯誤';
+                                }
+                            }
+
+                            showErrorToast(errorMessage);
+                        });
+
+                        videoElement.play().catch(function (error) {
+                            console.warn('播放失敗:', error);
+                            hideInfoToast();
+                        });
+                    }
+                }
+            }, 100);
+        }
+
+        function stopVideo() {
+            if (flvPlayer) {
+                flvPlayer.pause();
+                flvPlayer.unload();
+                flvPlayer.detachMediaElement();
+                flvPlayer.destroy();
+                flvPlayer = null;
+            }
+        }
+
+        // Modal 關閉時停止播放
+        document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+            stopVideo();
+        });
+
+        // 嘗試直接播放（備用方案）
+        function tryDirectPlayback(filename, title) {
+            console.log('嘗試直接播放:', filename);
+
+            // 清理之前的播放器
+            stopVideo();
+
+            const container = document.getElementById('videoContainer');
+            container.innerHTML = '';
+
+            // 建立新的 video 元素
+            const videoElement = document.createElement('video');
+            videoElement.id = 'videoPlayer';
+            videoElement.style.width = '100%';
+            videoElement.style.height = '100%';
+            videoElement.controls = true;
+            videoElement.src = '/videos/' + filename;
+            container.appendChild(videoElement);
+
+            // 嘗試播放
+            videoElement.play().catch(function (error) {
+                console.error('直接播放失敗:', error);
+                showErrorToast('直接播放也失敗了，建議下載後使用本地播放器觀看');
+            });
+        }
+
+        // 下載影片
+        function downloadVideo(filename) {
+            const link = document.createElement('a');
+            link.href = '/videos/' + filename;
+            link.download = filename;
+            link.click();
+        }
+    </script>
+}

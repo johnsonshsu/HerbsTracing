@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "藥材簡介";
+    dmItem item = new dmItem();
+    item.SetItemModelData(ViewBag.ItemNo);
+}
+
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <div>
+                    <div class="float-start">
+                        <h5>
+                            @ViewData["Title"]
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var itm in item.ItemDatas)
+                    {
+                        <div class="col-md-1 m-1">
+                            <a href="@Url.Action("Item", "Home", new { area = "", id = itm.ItemNo })">
+                                <img src="@Url.Content(itm.ImageUrl)" alt="@itm.ItemName" class="img-fluid"
+                                    style="max-width: 80px; height: auto;" title="@itm.ItemName" />
+                            </a>
+                        </div>
+                    }
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="@Url.Content(item.ItemModelData.ImageUrl)" alt="@item.ItemModelData.ItemName"
+                            class="img-fluid" />
+                    </div>
+                    <div class="col-md-9 fs-5">
+                        <div class="row">
+                            <div class="col-md-2 text-primary fw-bold">藥材名稱：</div>
+                            <div class="col-md-10 text-danger fw-bold">@item.ItemModelData.ItemName</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 text-primary fw-bold">基原：</div>
+                            <div class="col-md-10">@item.ItemModelData.Base</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 text-primary fw-bold">原產地：</div>
+                            <div class="col-md-10">@item.ItemModelData.Origion</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 text-primary fw-bold">修治：</div>
+                            <div class="col-md-10">@item.ItemModelData.Fix</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 text-primary fw-bold">性味歸經：</div>
+                            <div class="col-md-10">@item.ItemModelData.Tested</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 text-primary fw-bold">特色功能：</div>
+                            <div class="col-md-10">@item.ItemModelData.Function</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -336,25 +336,25 @@
                             if (suggestConversion) {
                                 setTimeout(function () {
                                     container.innerHTML = `
-                                                <div class="alert alert-warning m-3">
-                                                    <h5>影片格式不相容</h5>
-                                                    <p>此 FLV 影片使用的編碼格式不被支援。</p>
-                                                    <hr>
-                                                    <p><strong>建議解決方案：</strong></p>
-                                                    <ul>
-                                                        <li>將影片轉換為 H.264 視訊編碼 + AAC 音訊編碼的 FLV 格式</li>
-                                                        <li>或轉換為 MP4 格式（推薦）</li>
-                                                    </ul>
-                                                    <div class="mt-3">
-                                                        <button class="btn btn-primary btn-sm" onclick="tryDirectPlayback('${filename}', '${title}')">
-                                                            <i class="bi bi-play-circle"></i> 嘗試直接播放
-                                                        </button>
-                                                        <button class="btn btn-secondary btn-sm ms-2" onclick="downloadVideo('${filename}')">
-                                                            <i class="bi bi-download"></i> 下載影片
-                                                        </button>
-                                                    </div>
-                                                    <p class="mb-0 mt-2"><small>請聯絡系統管理員處理影片轉檔。</small></p>
-                                                </div>`;
+                                                    <div class="alert alert-warning m-3">
+                                                        <h5>影片格式不相容</h5>
+                                                        <p>此 FLV 影片使用的編碼格式不被支援。</p>
+                                                        <hr>
+                                                        <p><strong>建議解決方案：</strong></p>
+                                                        <ul>
+                                                            <li>將影片轉換為 H.264 視訊編碼 + AAC 音訊編碼的 FLV 格式</li>
+                                                            <li>或轉換為 MP4 格式（推薦）</li>
+                                                        </ul>
+                                                        <div class="mt-3">
+                                                            <button class="btn btn-primary btn-sm" onclick="tryDirectPlayback('${filename}', '${title}')">
+                                                                <i class="bi bi-play-circle"></i> 嘗試直接播放
+                                                            </button>
+                                                            <button class="btn btn-secondary btn-sm ms-2" onclick="downloadVideo('${filename}')">
+                                                                <i class="bi bi-download"></i> 下載影片
+                                                            </button>
+                                                        </div>
+                                                        <p class="mb-0 mt-2"><small>請聯絡系統管理員處理影片轉檔。</small></p>
+                                                    </div>`;
                                 }, 500);
                             }
                         });

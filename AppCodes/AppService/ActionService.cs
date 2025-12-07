@@ -255,7 +255,7 @@ public static class ActionService
     /// <param name="id">id</param>
     /// <param name="page">page</param>
     /// <returns></returns>
-    public static void SetReturnUrl(string area = "", string controller = "", string action = "", string id = "" , int page = 1)
+    public static void SetReturnUrl(string area = "", string controller = "", string action = "", string id = "", int page = 1)
     {
         ReturnArea = area;
         ReturnController = controller;
@@ -267,16 +267,14 @@ public static class ActionService
     /// Row ID
     /// </summary>
     /// <value></value>
-    public static int RowId
+    public static string RowId
     {
         get
         {
-            int int_value = 0;
             string str_value = "0";
             if (_context != null) str_value = _context.Session.Get<string>("RowId");
             if (str_value == null) str_value = "0";
-            if (!int.TryParse(str_value, out int_value)) int_value = 0;
-            return int_value;
+            return str_value;
         }
         set
         { _context?.Session.Set<string>("RowId", value.ToString()); }
@@ -313,6 +311,11 @@ public static class ActionService
         set
         { _context?.Session.Set<string>("ViewActionName", value); }
     }
+    /// <summary>
+    /// Admin Action 名稱
+    /// </summary>
+    public static string Admin { get { return "Admin"; } }
+
     /// <summary>
     /// Home Action 名稱
     /// </summary>

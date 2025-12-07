@@ -1,0 +1,84 @@
+@model vmTracingIndex
+@{
+    string TitleName = (SessionService.LanguageNo == "zh-TW") ? "推薦店家列表" : "Recommended Vendor List";
+    ViewData["Title"] = TitleName;
+    Layout = "_LayoutLite";
+    string isCurrent = "";
+    string isActive = "";
+    string cityNo = @ViewBag.CityNo ?? "";
+    string mapUrl = "";
+    
+}
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <div>
+                    <div class="float-start">
+                        <h5>
+                            @TitleName
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_PartialTracingHeader" , Model)
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="list-group">
+                            @foreach (var city in Model.CityList)
+                            {
+                                isCurrent = "false";
+                                isActive = "";
+                                if (city.mno == cityNo)
+                                {
+                                    isCurrent = "\"true\"";
+                                    isActive = "active";
+                                }
+                                <a href="@Url.Action(ActionService.Action, ActionService.Controller, 
+                                        new { area = ActionService.Area , id = city.mno})" 
+                                        class="list-group-item list-group-item-action @isActive" aria-current="@isCurrent">
+                                    @city.mname
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.VendorList.FirstOrDefault().mtitle)
+                                        </th>
+                                        <th class="table-wrap">
+                                            @Html.DisplayNameFor(model => model.VendorList.FirstOrDefault().maddr)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.VendorList)
+                                    {
+                                        mapUrl = "https://www.google.com/maps/search/?api=1&query=" + item.maddr;
+                                        <tr>
+                                            <td>
+                                                <a href="@mapUrl" target="_blank">
+                                                    @Html.DisplayFor(modelItem => item.mtitle)
+                                                </a>
+                                            </td>
+                                            <td class="table-wrap">
+                                                <a href="@mapUrl" target="_blank">
+                                                    @Html.DisplayFor(modelItem => item.maddr)
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

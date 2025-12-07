@@ -608,7 +608,7 @@ public class DapperSql<TEntity> : BaseClass where TEntity : class
     /// 刪除資料(同步呼叫)
     /// </summary>
     /// <param name="id">Key 欄位值</param>
-    public virtual int Delete(int id = 0)
+    public virtual int Delete(string id = "")
     {
         string str_query = dpr.GetSQLDeleteCommand(EntityObject);
         DynamicParameters parm = dpr.GetSQLDeleteParameters(EntityObject, id);
@@ -677,7 +677,7 @@ public class DapperSql<TEntity> : BaseClass where TEntity : class
     /// </summary>
     /// <param name="id">Key 欄位值</param>
     /// <returns></returns>
-    public virtual async Task<int> DeleteAsync(int id = 0)
+    public virtual async Task<int> DeleteAsync(string id = "")
     {
         string str_query = dpr.GetSQLDeleteCommand(EntityObject);
         DynamicParameters parm = dpr.GetSQLDeleteParameters(EntityObject, id);

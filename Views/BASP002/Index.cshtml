@@ -1,0 +1,89 @@
+@model IEnumerable<herbstracing.Models.z_bas_vendor>
+@{
+    ViewData["Title"] = "農戶資格審核作業";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno, "z_bas_vendor.mno")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mname, "z_bas_vendor.mname")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.cdate, "z_bas_vendor.cdate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.msex_name, "z_bas_vendor.msex")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mtel, "z_bas_vendor.mtel")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mfax, "z_bas_vendor.mfax")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mmobil, "z_bas_vendor.mmobil")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.maddress, "z_bas_vendor.maddress")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.memail, "z_bas_vendor.memail")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark, "z_bas_vendor.remark")
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid.ToString();
+                ActionService.RowData = $"{item.mno} {item.mname}";
+                <tr>
+                    <td>
+                        @Html.ActionLink("審核", "Confirm", ActionService.Controller, new { area = ActionService.Area , id=
+                        item.rowid} , new { @class = "btn btn-danger", onclick = "return confirm('是否確定要審核?');" })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cdate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.msex_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mtel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mfax)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mmobil)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.maddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.memail)
+                </td>
+                <td class="table-wrap">
+                    @Html.DisplayFor(modelItem => item.remark)
+                </td>
+            </tr>
+                        }
+        </tbody>
+    </table>
+</div>

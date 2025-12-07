@@ -1,0 +1,69 @@
+@model vmTracingIndex
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_LayoutLite";
+    string TraceName = (SessionService.LanguageNo == "zh-TW") ? "溯源碼" : "Tracing Code";
+    string PlaceName = (SessionService.LanguageNo == "zh-TW") ? "產地" : "Place";
+    string DetailName = (SessionService.LanguageNo == "zh-TW") ? "明細" : "Detail";
+    string ProdNo = (SessionService.LanguageNo == "zh-TW") ? "藥材編號" : "Medicinal Herb No"; 
+    string ProdName = (SessionService.LanguageNo == "zh-TW") ? "藥材名稱" : "Medicinal Herb Name";
+}
+
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <span class="col-caption">@TraceName：</span>
+                    <span class="col-data">@Html.DisplayFor(model => model.TracingHead.TracingCode)</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_PartialTracingHeader" , Model)
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>
+                                    @DetailName
+                                </th>
+                                <th>
+                                    @PlaceName
+                                </th>
+                                <th>
+                                    @ProdNo
+                                </th>
+                                <th class="table-wrap">
+                                    @ProdName
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ItemBOMList)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.ActionLink(DetailName, ActionService.Detail, ActionService.Controller, new
+                                        { area = ActionService.Area, id = item.mno }, new
+                                        { @class = "btn btn-secondary" })
+                                    </td>
+                                    <td>
+                                    @Html.ActionLink(PlaceName, "Place", ActionService.Controller, new
+                                        { area = ActionService.Area, id = item.mno }, new
+                                        { @class = "btn btn-secondary" })
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.mno)
+                                    </td>
+                                     <td class="table-wrap">
+                                        @Html.DisplayFor(modelItem => item.mname)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>             
+            </div>
+        </div>
+    </div>
+</div>

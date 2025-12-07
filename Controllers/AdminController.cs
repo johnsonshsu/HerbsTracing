@@ -12,6 +12,11 @@ namespace herbstracing.Controllers
     {
         public IActionResult Index()
         {
+            SessionService.PrgNo = ""; //預設程式編號
+            SessionService.PrgName = "後台管理首頁"; //預設程式名稱
+            ActionService.SetActionName(enAction.None);
+            ActionService.SetSubActionName();
+            ActionService.SetActionCardSize(enCardSize.Max);
             return View();
         }
     }

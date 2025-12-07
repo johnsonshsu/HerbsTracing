@@ -1,0 +1,70 @@
+@model vmTracingIndex
+@{
+    ViewData["Title"] = "藥材檢測明細";
+    Layout = "_LayoutLite";
+    string TrcOK = (SessionService.LanguageNo == "zh-TW") ? "~/images/WebForm/trcok_tw.png" : "~/images/WebForm/trcok_eng.png";
+}
+
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <div>
+                    <div class="float-start">
+                        <h5>
+                            @ViewBag.ItemName
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_PartialTracingHeader" , Model)
+                <div class="table-responsive">
+                    <div class="text-center">
+                        <img src="@Url.Content("~/images/WebForm/trcheader.png")" class="img-fluid" />
+                    </div>
+                    <table class="table table-bordered">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_base)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_unit)
+                                </th>
+                                <th class="table-wrap">
+                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_result)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TestItemList)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.test_name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.test_base)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.test_unit)
+                                    </td>
+                                    <td class="table-wrap">
+                                        @Html.DisplayFor(modelItem => item.test_result)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div>
+                        <img src="@Url.Content(TrcOK)" class="img-fluid" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

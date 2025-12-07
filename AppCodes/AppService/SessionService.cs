@@ -154,6 +154,24 @@ public static class SessionService
         set { SetSessionValue<string>("UserName", value); }
     }
     /// <summary>
+    /// 登入使用者組織
+    /// </summary>
+    /// <value></value>
+    public static string OrgNo
+    {
+        get { return GetSessionValue<string>("OrgNo", "").ToString(); }
+        set { SetSessionValue<string>("OrgNo", value); }
+    }
+    /// <summary>
+    /// 登入使用者公司
+    /// </summary>
+    /// <value></value>
+    public static string CompanyNo
+    {
+        get { return GetSessionValue<string>("CompanyNo", "").ToString(); }
+        set { SetSessionValue<string>("CompanyNo", value); }
+    }
+    /// <summary>
     /// 登入使用者角色
     /// </summary>
     /// <value></value>
@@ -1108,6 +1126,27 @@ public static class SessionService
     {
         get { return GetSessionValue<string>("ErrorMessage", "").ToString(); }
         set { SetSessionValue<string>("ErrorMessage", value); }
+    }
+    #endregion
+    #region 專案相關
+    /// <summary>
+    /// 語言代號
+    /// </summary>
+    /// <value></value>
+    public static string LanguageNo
+    {
+        get 
+        {
+            string str_value = GetSessionValue<string>("LanguageNo", "").ToString();
+            if (string.IsNullOrEmpty(str_value)) str_value = "zh-TW";
+            return str_value; 
+        }
+        set 
+        { 
+            string str_value = value;
+            if (string.IsNullOrEmpty(str_value)) str_value = "zh-TW";
+            SetSessionValue<string>("LanguageNo", str_value); 
+        }
     }
     #endregion
 }

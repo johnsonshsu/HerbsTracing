@@ -20,21 +20,18 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="searchType" class="form-label fs-5">搜尋方式</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="searchType" id="searchByAddress"
-                                value="address" checked>
-                            <label class="form-check-label" for="searchByAddress">
-                                依地址搜尋
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="searchType" id="searchByCoordinates"
-                                value="coordinates">
-                            <label class="form-check-label" for="searchByCoordinates">
-                                依經緯度搜尋
-                            </label>
-                        </div>
+                        <label for="country" class="form-label fs-5">國家</label>
+                        <select class="form-select" id="country">
+                            <option value="">請選擇國家</option>
+                            <option value="TW">台灣</option>
+                            <option value="CN">中國</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="region" class="form-label fs-5">行政區</label>
+                        <select class="form-select" id="region" disabled>
+                            <option value="">請先選擇國家</option>
+                        </select>
                     </div>
                     <button type="button" class="btn btn-primary w-100" id="loadMapData">載入地圖資料</button>
                     <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="clearMarkers">清除標記</button>
@@ -80,6 +77,7 @@
 
     // 初始化 Google 地圖
     function initMap() {
+        console.log('開始初始化 Google 地圖');
         const defaultCenter = { lat: 23.8, lng: 121.0 }; // 台灣中心點
 
         map = new google.maps.Map(document.getElementById("map"), {
@@ -89,22 +87,35 @@
             streetViewControl: true,
             fullscreenControl: true,
             zoomControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         });
 
+        // 監聽地圖載入完成事件
+        google.maps.event.addListenerOnce(map, 'tilesloaded', function(){
+            console.log('地圖底圖載入完成');
+        });
+
+        console.log('地圖物件建立完成');
         updateLoadingStatus("地圖初始化完成");
     }
 
     // 載入地圖資料
     document.getElementById('loadMapData').addEventListener('click', function () {
         const dataSource = document.getElementById('dataSource').value;
-        const searchType = document.querySelector('input[name="searchType"]:checked').value;
+        const country = document.getElementById('country').value;
+        const region = document.getElementById('region').value;
 
         if (!dataSource) {
             alert('請選擇資料來源');
             return;
         }
 
-        loadMapData(dataSource, searchType);
+        if (!country) {
+            alert('請選擇國家');
+            return;
+        }
+
+        loadMapData(dataSource, country, region);
     });
 
     // 清除所有標記
@@ -115,7 +126,7 @@
     });
 
     // AJAX 載入地圖資料
-    function loadMapData(dataSource, searchType) {
+    function loadMapData(dataSource, country, region) {
         showLoading(true);
         updateLoadingStatus("正在載入資料...");
 
@@ -124,7 +135,8 @@
             type: 'GET',
             data: {
                 dataSource: dataSource,
-                searchType: searchType
+                country: country,
+                region: region
             },
             beforeSend: function () {
                 $('#loadMapData').prop('disabled', true);
@@ -135,7 +147,7 @@
 
                 if (response.success && response.data) {
                     clearAllMarkers();
-                    processMapData(response.data, searchType);
+                    processMapData(response.data);
                     updateLoadingStatus(`成功載入 ${response.data.length} 筆資料`);
                     updateProgressBar(100);
                 } else {
@@ -156,34 +168,40 @@
     }
 
     // 處理地圖資料
-    function processMapData(data, searchType) {
+    function processMapData(data) {
+        console.log('處理地圖資料:', data);
         const bounds = new google.maps.LatLngBounds();
-        let processedCount = 0;
+        let validMarkers = 0;
 
         data.forEach((item, index) => {
-            if (searchType === 'address') {
-                // 使用 Google Geocoding API 將地址轉換為座標
-                geocodeAddress(item.address, item, bounds, () => {
-                    processedCount++;
-                    if (processedCount === data.length) {
-                        fitMapToBounds(bounds);
-                    }
-                });
-            } else if (searchType === 'coordinates') {
-                // 直接使用經緯度
+            // 檢查座標有效性
+            const lat = parseFloat(item.lat);
+            const lng = parseFloat(item.lng);
+            
+            console.log(`標記 ${index}: lat=${item.lat}, lng=${item.lng}, parsed: lat=${lat}, lng=${lng}`);
+            
+            if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
                 addMarker(item, bounds);
-                if (index === data.length - 1) {
-                    fitMapToBounds(bounds);
-                }
+                validMarkers++;
+            } else {
+                console.warn(`無效座標: ${item.name} - lat: ${item.lat}, lng: ${item.lng}`);
             }
         });
+
+        console.log(`共處理 ${data.length} 筆資料，有效標記 ${validMarkers} 個`);
+        
+        if (validMarkers > 0) {
+            fitMapToBounds(bounds);
+        } else {
+            updateLoadingStatus("沒有有效的座標資料");
+        }
     }
 
     // 地址解析
     function geocodeAddress(address, item, bounds, callback) {
         const geocoder = new google.maps.Geocoder();
 
-        geocoder.geocode({ address: address + ', Taiwan' }, function (results, status) {
+        geocoder.geocode({ address: address + ', TW' }, function (results, status) {
             if (status === 'OK' && results[0]) {
                 const location = results[0].geometry.location;
                 item.lat = location.lat();
@@ -262,12 +280,30 @@
     // 調整地圖檢視範圍
     function fitMapToBounds(bounds) {
         if (!bounds.isEmpty()) {
-            map.fitBounds(bounds);
-
-            // 如果只有一個點，設定適當的縮放等級
+            console.log('調整地圖視角範圍');
+            
+            // 如果只有一個點，直接設定中心點和縮放等級
             if (markers.length === 1) {
-                map.setZoom(15);
+                console.log('單一標記，設定中心點');
+                map.setCenter(markers[0].getPosition());
+                map.setZoom(12);
+            } else {
+                // 多個標記時使用 fitBounds
+                console.log('多個標記，使用 fitBounds');
+                map.fitBounds(bounds);
+                
+                // 延遲檢查縮放等級，避免過度縮放
+                setTimeout(() => {
+                    const currentZoom = map.getZoom();
+                    console.log('當前縮放等級:', currentZoom);
+                    if (currentZoom > 16) {
+                        console.log('限制最大縮放等級為 16');
+                        map.setZoom(16);
+                    }
+                }, 100);
             }
+        } else {
+            console.log('bounds 為空，保持預設視角');
         }
     }
 
@@ -301,6 +337,27 @@
         document.getElementById('markerCount').textContent = `標記數量: ${markers.length}`;
     }
 
+    // 從後端載入行政區資料
+    function loadRegions(country, callback) {
+        $.ajax({
+            url: '@Url.Action("GetRegions", "Home")',
+            type: 'GET',
+            data: { country: country },
+            success: function (response) {
+                if (response.success && response.data) {
+                    callback(response.data);
+                } else {
+                    console.error('載入行政區失敗:', response.message);
+                    callback([]);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('載入行政區錯誤:', error);
+                callback([]);
+            }
+        });
+    }
+
     // 頁面載入完成後的初始化
     $(document).ready(function () {
         updateLoadingStatus("等待 Google 地圖載入...");
@@ -309,6 +366,49 @@
         $('#dataSource').change(function () {
             if (this.value) {
                 updateLoadingStatus(`已選擇資料來源: ${this.options[this.selectedIndex].text}`);
+            }
+        });
+
+        // 監聽國家選擇變更
+        $('#country').change(function () {
+            const selectedCountry = this.value;
+            const regionSelect = $('#region');
+
+            // 清空行政區選項
+            regionSelect.empty();
+
+            if (selectedCountry) {
+                // 顯示載入中
+                regionSelect.prop('disabled', true);
+                regionSelect.append('<option value="">載入中...</option>');
+
+                // 從後端載入行政區資料
+                loadRegions(selectedCountry, function (regions) {
+                    // 清空並重新填充選項
+                    regionSelect.empty();
+                    regionSelect.prop('disabled', false);
+
+                    // 加入預設選項
+                    regionSelect.append('<option value="">全部行政區</option>');
+
+                    // 加入行政區選項
+                    regions.forEach(region => {
+                        regionSelect.append(`<option value="${region.value}">${region.text}</option>`);
+                    });
+                });
+
+                // 調整地圖中心點
+                if (selectedCountry === 'TW') {
+                    map.setCenter({ lat: 23.8, lng: 121.0 });
+                    map.setZoom(8);
+                } else if (selectedCountry === 'CN') {
+                    map.setCenter({ lat: 35.0, lng: 105.0 });
+                    map.setZoom(5);
+                }
+            } else {
+                // 禁用行政區選擇
+                regionSelect.prop('disabled', true);
+                regionSelect.append('<option value="">請先選擇國家</option>');
             }
         });
     });

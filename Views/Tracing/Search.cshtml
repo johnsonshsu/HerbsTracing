@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "_LayoutLite";
+    string PlaceName = (SessionService.LanguageNo == "zh-TW") ? "產地" : "Place";
+}
+
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white text-center">
+                <h5 class="mb-0">
+                    <span class="col-caption">科達製藥中藥材溯源系統</span><br />
+                    <span class="col-data">Ko Da Pharmaceutical's Tracibility Control</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <a href="@Url.Action("Language", ActionService.Controller, new { area = ActionService.Area, id = "zh-TW" })">
+                            <img src="~/images/WebForm/trclogin_tw.png" alt="Traditional Chinese" title="Traditional Chinese" />
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <a href="@Url.Action("Language", ActionService.Controller, new { area = ActionService.Area, id = "en-US" })">
+                            <img src="~/images/WebForm/trclogin_eng.png" alt="English" title="English" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>中藥材溯源系統</title>
+    <link rel="stylesheet" href="@Url.Content("~/lib/jqueryui/themes/base/jquery-ui.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap-icons/font/bootstrap-icons.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/toastr.js/toastr.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/datepicker/datepicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/datepicker/timepicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/font-awesome/css/all.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/flag-icons/css/flag-icons.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap-select/css/bootstrap-select.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/sweetalert2/sweetalert2.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/dashboard.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/home.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/site.css")" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="@Url.Content("~/lib/jqueryui/jquery-ui.min.js")"></script>
+    <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/lib/toastr.js/toastr.min.js")"></script>
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+    @await Html.PartialAsync("_PartialAlertMessage")
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

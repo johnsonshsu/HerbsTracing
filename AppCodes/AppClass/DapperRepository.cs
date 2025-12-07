@@ -285,10 +285,12 @@ public class DapperRepository : BaseClass
     public T ReadSingle<T>(string query, DynamicParameters parameters)
     {
         ErrorMessage = "";
-        T ReturnValue = (T)Activator.CreateInstance(typeof(T));
-        using var conn = new SqlConnection(ConnectionString);
+        var ReturnValue = default(T);
+        using var conn = new SqlConnection();
         try
         {
+            ReturnValue = (T)Activator.CreateInstance(typeof(T));
+            conn.ConnectionString = ConnectionString;
             conn.Open();
             int int_count = (parameters == null) ? 0 : parameters.ParameterNames.Count();
             if (int_count == 0)
@@ -1028,7 +1030,7 @@ public class DapperRepository : BaseClass
     /// <param name="entity">型別</param>
     /// <param name="id">主鍵值</param>
     /// <returns></returns>
-    public DynamicParameters GetSQLDeleteParameters<T>(T entity, int id)
+    public DynamicParameters GetSQLDeleteParameters<T>(T entity, string id)
     {
         string str_key_name = GetKeyColumnName(entity);
         DynamicParameters parm = new DynamicParameters();

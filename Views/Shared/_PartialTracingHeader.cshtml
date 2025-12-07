@@ -1,0 +1,65 @@
+@model vmTracingIndex
+@{
+    string AppCertification = AppService.GetApplicationString("AppCertification");
+    string AppHome = AppService.GetApplicationString("AppHome");
+    string AssemblyTest = (SessionService.LanguageNo == "zh-TW") ? "組成檢驗" : "Assembly Test";
+    string Tester = (SessionService.LanguageNo == "zh-TW") ? "檢驗中心" : "Certification";
+    string Recommand = (SessionService.LanguageNo == "zh-TW") ? "推薦" : "Recommend";
+    string KodaPharma = (SessionService.LanguageNo == "zh-TW") ? "科達製藥" : "Koda Pharma";
+    string ProdName = (SessionService.LanguageNo == "zh-TW") ? "產品名稱" : "Product Name";
+    string ProdLotNo = (SessionService.LanguageNo == "zh-TW") ? "製造批號" : "Product Lot No";
+    string ValidDate = (SessionService.LanguageNo == "zh-TW") ? "有效日期" : "Valid Date";
+    string ReportNo = (SessionService.LanguageNo == "zh-TW") ? "報告編號" : "Report No";
+}
+<div class="row">
+<div class="col-md-12">
+        <span class="col-caption">@ProdName：</span>
+        <span class="col-data">@Html.DisplayFor(model => model.TracingHead.ProdName)</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <span class="col-caption">@ProdLotNo：</span>
+        <span class="col-data">@Html.DisplayFor(model => model.TracingHead.ProdLotNo)</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <span class="col-caption">@ValidDate：</span>
+        <span class="col-data">@Html.DisplayFor(model => model.TracingHead.ValidDate)</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <span class="col-caption">@ReportNo：</span>
+        <span class="col-data">@Html.DisplayFor(model => model.TracingHead.ReportNo)</span>
+    </div>
+</div>
+<hr />
+<ul class="nav nav-pills ">
+    <li class="nav-item">
+        <a class="nav-link @(Model.TracingHead.ActionName == "Index" ? "active" : "")" aria-current="@(Model.TracingHead.ActionName == "Index" ? "page" : "")" 
+            href="@Url.Action(ActionService.Index , ActionService.Controller , new {area = ActionService.Area , id = TracingService.TracingCode})">
+            @AssemblyTest
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.TracingHead.ActionName == "Certification" ? "active" : "")" aria-current="@(Model.TracingHead.ActionName == "Certification" ? "page" : "")"
+           href="@AppCertification">
+           @Tester
+       </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.TracingHead.ActionName == "Recommend" ? "active" : "")" aria-current="@(Model.TracingHead.ActionName == "Recommend" ? "page" : "")"
+            href="@Url.Action("Recommend" , ActionService.Controller , new {area = ActionService.Area})">
+            @Recommand
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.TracingHead.ActionName == "AppHome" ? "active" : "")" aria-current="@(Model.TracingHead.ActionName == "AppHome" ? "page" : "")"
+            href="@AppHome">
+            @KodaPharma
+        </a>
+    </li>
+</ul>
+<hr />

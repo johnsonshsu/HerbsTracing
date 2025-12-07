@@ -1,0 +1,153 @@
+@model vmTracingIndex
+@{
+    ViewData["Title"] = "Place";
+    Layout = "_LayoutLite";
+    string HerbName = (SessionService.LanguageNo == "zh-TW") ? "藥材名稱" : "Herb Name";
+    string GeographyName = (SessionService.LanguageNo == "zh-TW") ? "地理環境" : "Geographical Environment";
+    string ProductionLocation = (SessionService.LanguageNo == "zh-TW") ? "產地位址" : "Production Location";
+    string RegionalAttributes = (SessionService.LanguageNo == "zh-TW") ? "區域屬性" : "Regional Attributes";
+    string Altitude = (SessionService.LanguageNo == "zh-TW") ? "海拔高度" : "Altitude";
+    string CultivationArea = (SessionService.LanguageNo == "zh-TW") ? "耕種面積" : "Cultivation Area";
+    string Climate = (SessionService.LanguageNo == "zh-TW") ? "氣　　候" : "Climate";
+    string AverageAnnualTemperature = (SessionService.LanguageNo == "zh-TW") ? "年平均氣溫" : "Average Annual Temperature";
+    string AverageAnnualRainfall = (SessionService.LanguageNo == "zh-TW") ? "年平均降雨量" : "Average Annual Rainfall";
+    string FrostFreePeriod = (SessionService.LanguageNo == "zh-TW") ? "無霜期" : "Frost-Free Period";
+    string ExtremeHighestTemperature = (SessionService.LanguageNo == "zh-TW") ? "極端最高氣溫" : "Extreme Highest Temperature";
+    string ExtremeLowestTemperature = (SessionService.LanguageNo == "zh-TW") ? "極端最低氣溫" : "Extreme Lowest Temperature";
+    string IrrigationSource = (SessionService.LanguageNo == "zh-TW") ? "灌溉水源頭" : "Irrigation Source";
+    string SurroundingEnvironment = (SessionService.LanguageNo == "zh-TW") ? "周圍環境" : "Surrounding Environment";
+    string PlaceImage = (SessionService.LanguageNo == "zh-TW") ? "產地圖片" : "Place of origin image";
+}
+
+<div class="container-fluid">
+    <div class="py-2">
+        <div class="card border-secondary card-size-max">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <span class="col-caption">@HerbName：</span>
+                    <span class="col-data">@TracingService.ItemSubName</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_PartialTracingHeader" , Model)
+                <table style="width: 100%; background-color: #FFFFFF; border-collapse: collapse; border-spacing: 0px">
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 100px;"
+                            rowspan="4">
+                            @GeographyName
+                        </td>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @ProductionLocation
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.maddress
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @RegionalAttributes
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.area_type
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @Altitude
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.mhight
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @CultivationArea
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.marea
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080"
+                            rowspan="5">
+                            @Climate
+                        </td>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @AverageAnnualTemperature
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.mtemperature
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @FrostFreePeriod
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.mrain
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @FrostFreePeriod
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.mfrost
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @ExtremeHighestTemperature
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.temp_height
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @ExtremeLowestTemperature
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.temp_low
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @IrrigationSource
+                        </td>
+                        <td colspan="2" style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.mwater
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080">
+                            @SurroundingEnvironment
+                        </td>
+                        <td colspan="2" style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            @Model.PlaceInfo.menvironment
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none solid solid; border-width: 1px; border-color: #808080">
+                            @PlaceImage
+                        </td>
+                        <td colspan="2" style="border-style: solid solid solid solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <img src="@Url.Content(Model.PlaceInfo.PlaceImage1)" class="img-fluid" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="@Url.Content(Model.PlaceInfo.PlaceImage2)" class="img-fluid" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

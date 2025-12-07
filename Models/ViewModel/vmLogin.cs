@@ -10,4 +10,6 @@ public class vmLogin
     [Required(ErrorMessage = "登入密碼不可空白!!")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = "";
+    [Display(Name = "驗證碼")]
+    public string CaptchaCode { get; set; } = "";
 }

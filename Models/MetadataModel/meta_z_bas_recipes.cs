@@ -3,7 +3,15 @@ namespace herbstracing.Models
     [ModelMetadataType(typeof(metaz_bas_recipes))]
     public partial class z_bas_recipes
     {
-
+        [NotMapped]
+        [Display(Name = "分類")]
+        public string? mcode_name { get; set; }
+        [NotMapped]
+        [Display(Name = "圖片1")]
+        public string? file1 { get; set; }
+        [NotMapped]
+        [Display(Name = "圖片2")]
+        public string? file2 { get; set; }
     }
 }
 

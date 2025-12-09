@@ -27,8 +27,8 @@ SELECT z_bas_item.rowid,z_bas_item.mcode,z_bas_item.mtype,z_bas_item.mno,z_bas_i
 ,z_bas_item.mename,z_bas_item.munit,z_bas_item.mplace,z_bas_item.mparts,z_bas_item.msource
 ,z_bas_item.mdescribe,z_bas_item.mremark,z_bas_item.msale,z_bas_item.mprice,z_bas_item.issale
 ,z_bas_item.ispicture,z_bas_item.pictureurl,z_bas_item.cart_unit,z_bas_item.cart_price
-,z_bas_item.cart_undiscount 
-FROM z_bas_item 
+,z_bas_item.cart_undiscount
+FROM z_bas_item
 ";
             return str_query;
         }
@@ -36,9 +36,19 @@ FROM z_bas_item
         public override z_bas_item GetData(string id)
         {
             string str_query = GetSQLSelect();
-            str_query += " WHERE z_bas_item.mno = @id";
+            str_query += " WHERE z_bas_item.rowid = @rowid";
             DynamicParameters parm = new DynamicParameters();
-            parm.Add("id", id);
+            parm.Add("rowid", id);
+            var model = dpr.ReadSingle<z_bas_item>(str_query, parm);
+            return model;
+        }
+
+        public z_bas_item GetDataByNo(string itemNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_item.mno = @mno";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("mno", itemNo);
             var model = dpr.ReadSingle<z_bas_item>(str_query, parm);
             return model;
         }

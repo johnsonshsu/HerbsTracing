@@ -23,12 +23,23 @@ namespace herbstracing.Models
         public override string GetSQLSelect()
         {
             string str_query = @"
-SELECT z_bas_contract.rowid,z_bas_contract.user_no,z_bas_contract.place_no,z_bas_contract.item_no 
-,z_bas_contract.mno,z_bas_contract.mdate,z_bas_contract.mdate1,z_bas_contract.mdate2 
-,z_bas_contract.lot_no,z_bas_contract.isconfirm,z_bas_contract.isclose,z_bas_contract.remark 
-FROM z_bas_contract 
+SELECT z_bas_contract.rowid, z_bas_contract.user_no, z_bas_vendor.mname AS user_name,
+z_bas_contract.place_no,z_bas_place.mname AS place_name, z_bas_contract.item_no,
+z_bas_item.mname AS item_name, z_bas_contract.mno, z_bas_contract.mdate,
+z_bas_contract.mdate1, z_bas_contract.mdate2, z_bas_contract.lot_no,
+z_bas_contract.isconfirm, z_bas_contract.isclose, z_bas_contract.remark
+FROM z_bas_contract
+LEFT OUTER JOIN z_bas_place ON z_bas_contract.place_no = z_bas_place.mno
+LEFT OUTER JOIN z_bas_item ON z_bas_contract.item_no = z_bas_item.mno
+LEFT OUTER JOIN z_bas_vendor ON z_bas_contract.user_no = z_bas_vendor.mno
 ";
             return str_query;
+        }
+
+        public List<z_bas_contract> GetUserContractList(string userNo ,string searchText = "")
+        {
+            var models = GetDataList(searchText);
+            return models.Where(m => m.user_no == userNo).ToList();
         }
 
         public override z_bas_contract GetData(string id)

@@ -119,6 +119,11 @@
                         id="menu">
                         @foreach (var module in ModuleList)
                         {
+                            string moduleshow = "";
+                            if (SessionService.PrgNo.Length >= 3)
+                            {
+                                moduleshow = (module.mno == SessionService.PrgNo.Substring(0, 3)) ? "show" : "";
+                            }
                             string moduleid = $"#{module.mno}";
                             var prgList = sqlSecurity.GetUserPrograms(SessionService.UserNo, module.mno);
 
@@ -127,12 +132,14 @@
                                     <span class="ms-2 d-none d-sm-inline fs-5">@module.mno @module.mname</span>
                                     <i class="fa fa-caret-down"></i>
                                 </a>
-                                <ul class="collapse nav flex-column ms-1" id="@module.mno" data-bs-parent="#menu">
+                                <ul class="collapse @moduleshow nav flex-column ms-1" id="@module.mno" data-bs-parent="#menu">
                                     @foreach (var prg in prgList)
                                     {
+                                        string prgActive = (prg.mno == SessionService.PrgNo) ? "active" : "";
                                         <li class="sidesubnav w-100">
-                                            <a href="@Url.Action("Init", prg.mno, new { area = "" })" class="nav-link">
-                                                <span class="d-none d-sm-inline">@prg.mno @prg.mname</span>
+                                            <a href="@Url.Action("Init", prg.mno, new { area = "" })" class="nav-link @prgActive">
+                                                <span class="d-none d-sm-inline">@prg.mno.Substring(3, prg.mno.Length - 3)
+                                                    @prg.mname</span>
                                             </a>
                                         </li>
                                     }

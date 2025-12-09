@@ -1,0 +1,82 @@
+@model IEnumerable<herbstracing.Models.z_bas_item_desc>
+
+@{
+    ViewData["Title"] = "藥材簡介資料列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.msort)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mname)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mbase)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.morigion)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mplace)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mfix)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mtested)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mfuntion)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid.ToString();
+                ActionService.RowData = item.mname ?? "";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @Html.ActionLink("刪除", "Delete", ActionService.Controller,
+                            new { area = ActionService.Area , id=item.rowid} ,
+                            new { @class = "btn btn-danger", onclick = "return confirm('是否確定要刪除?');" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.msort)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mbase)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.morigion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mplace)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.mfix)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mtested)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mfuntion)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

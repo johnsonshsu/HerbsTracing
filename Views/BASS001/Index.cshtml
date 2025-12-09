@@ -1,0 +1,56 @@
+@model IEnumerable<herbstracing.Models.z_sys_news>
+
+@{
+    ViewData["Title"] = "網站公告資料列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.misenabled)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mtitle)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdescribe)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mtitle}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.misenabled)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mtitle)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.mdescribe)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

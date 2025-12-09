@@ -23,10 +23,11 @@ namespace herbstracing.Models
         public override string GetSQLSelect()
         {
             string str_query = @"
-SELECT z_sys_news.rowid , z_sys_news.mcode , z_sys_news.mdate ,  
+SELECT z_sys_news.rowid , z_sys_news.mcode , z_sys_news.mdate ,
 z_sys_news.mtitle , z_sys_news.mdescribe , z_sys_news.isenabled  ,
-substring(z_sys_news.mdescribe, 1, 30) + '...' as mshort_describe 
-FROM z_sys_news  
+substring(z_sys_news.mdescribe, 1, 30) + '...' as mshort_describe ,
+CASE WHEN z_sys_news.isenabled = 'True' THEN 1 ELSE 0 END AS misenabled
+FROM z_sys_news
 ";
             return str_query;
         }

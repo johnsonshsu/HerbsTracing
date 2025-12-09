@@ -24,8 +24,8 @@ namespace herbstracing.Models
         {
             string str_query = @"
 SELECT  z_bas_item_bom.rowid, z_bas_item_bom.parentid, z_bas_item_bom.mno, z_bas_item.mname, z_bas_item_bom.item_no
-FROM  z_bas_item_bom 
-INNER JOIN z_bas_item ON z_bas_item_bom.mno = z_bas_item.mno 
+FROM  z_bas_item_bom
+INNER JOIN z_bas_item ON z_bas_item_bom.mno = z_bas_item.mno
 ";
             return str_query;
         }
@@ -72,6 +72,27 @@ INNER JOIN z_bas_item ON z_bas_item_bom.mno = z_bas_item.mno
             else
                 model = dpr.ReadAll<z_bas_item_bom>(sql_query);
             ErrorMessage = dpr.ErrorMessage;
+            return model;
+        }
+
+        public override z_bas_item_bom GetData(string id)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_item_bom.rowid = @rowid";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("rowid", id);
+            var model = dpr.ReadSingle<z_bas_item_bom>(str_query, parm);
+            return model;
+        }
+
+        public z_bas_item_bom GetDataByNo(string parentNo , string itemNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE parentid.item_no = @item_no AND z_bas_item_bom.mno = @mno";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("item_no", parentNo);
+            parm.Add("mno", itemNo);
+            var model = dpr.ReadSingle<z_bas_item_bom>(str_query, parm);
             return model;
         }
     }

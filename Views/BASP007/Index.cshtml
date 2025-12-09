@@ -1,0 +1,50 @@
+@model IEnumerable<herbstracing.Models.z_bas_test>
+
+@{
+    ViewData["Title"] = "檢測項目主檔列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mname)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mename)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mname)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.mename)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

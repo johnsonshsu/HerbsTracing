@@ -10,7 +10,7 @@ public static class ActionService
     public static IHttpContextAccessor _contextAccessor { get; set; } = new HttpContextAccessor();
     /// <summary>
     /// HttpContext 物件
-    /// </summary> 
+    /// </summary>
     public static HttpContext? _context { get { return _contextAccessor.HttpContext; } }
     /// <summary>
     /// 取得目前的 Area 名稱
@@ -287,9 +287,9 @@ public static class ActionService
     {
         get
         {
-            string str_value = "0";
+            string str_value = "";
             if (_context != null) str_value = _context.Session.Get<string>("RowData");
-            if (str_value == null) str_value = "0";
+            if (str_value == null) str_value = "";
             return str_value;
         }
         set
@@ -508,7 +508,7 @@ public static class ActionService
     }
 
     /// <summary>
-    /// 取得目前控制器的指定 Action 的網址 
+    /// 取得目前控制器的指定 Action 的網址
     /// </summary>
     /// <param name="actionName">Action 名稱</param>
     /// <returns></returns>

@@ -31,9 +31,9 @@ SELECT z_bas_place.rowid,z_bas_place.user_no,z_bas_place.mno,z_bas_place.mname,z
 ,z_bas_place.etemp_height,z_bas_place.temp_low,z_bas_place.etemp_low,z_bas_place.mwater,z_bas_place.emwater
 ,z_bas_place.menvironment,z_bas_place.emenvironment,z_bas_place.remark,z_bas_place.mapaddr,z_bas_place.mapdesc
 ,z_bas_place.mapx,z_bas_place.mapy,z_bas_place.ismap ,
-'~/images/Place/' + mno + '_1.jpg' AS PlaceImage1, 
-'~/images/Place/' + mno + '_2.jpg' AS PlaceImage2 
-  FROM z_bas_place  
+'~/images/Place/' + mno + '_1.jpg' AS PlaceImage1,
+'~/images/Place/' + mno + '_2.jpg' AS PlaceImage2
+  FROM z_bas_place
 ";
             return str_query;
         }
@@ -52,10 +52,26 @@ SELECT z_bas_place.rowid,z_bas_place.user_no,z_bas_place.mno,z_bas_place.mname,z
         /// 取得產品產地資訊
         /// </summary>
         /// <param name="vendorNo">廠商編號</param>
+        /// <returns></returns>
+        public List<z_bas_place> GetVendorPlaceList(string vendorNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_place.user_no = @vendorNo";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("vendorNo", vendorNo);
+            var model = dpr.ReadAll<z_bas_place>(str_query, parm);
+            return model;
+        }
+
+        /// <summary>
+        /// 取得產品產地資訊
+        /// </summary>
+        /// <param name="vendorNo">廠商編號</param>
         /// <param name="placeNo">產地編號</param>
         /// <returns></returns>
         public z_bas_place GetProductPlace(string vendorNo, string placeNo)
         {
+            if (string.IsNullOrEmpty(placeNo)) return new z_bas_place();
             string str_query = GetSQLSelect();
             str_query += " WHERE z_bas_place.user_no = @vendorNo AND z_bas_place.mno = @placeNo";
             DynamicParameters parm = new DynamicParameters();
@@ -63,6 +79,27 @@ SELECT z_bas_place.rowid,z_bas_place.user_no,z_bas_place.mno,z_bas_place.mname,z
             parm.Add("placeNo", placeNo);
             var model = dpr.ReadSingle<z_bas_place>(str_query, parm);
             return model;
+        }
+
+        public void UpdatePlaceData(z_bas_place placeModel)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_place.mno = @mno";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("mno", placeModel.mno);
+            var model = dpr.ReadSingle<z_bas_place>(str_query, parm);
+            if (model != null)
+            {
+                placeModel.rowid = model.rowid;
+                placeModel.user_no = model.user_no;
+                Edit(placeModel);
+            }
+            else
+            {
+                placeModel.rowid = Guid.NewGuid().ToString();
+                placeModel.user_no = model.user_no;
+                Create(placeModel);
+            }
         }
     }
 }

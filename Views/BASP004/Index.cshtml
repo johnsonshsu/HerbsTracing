@@ -1,0 +1,403 @@
+@model IEnumerable<herbstracing.Models.z_bas_vendor>
+
+@{
+    ViewData["Title"] = "農戶基本資料列表";
+    Layout = "_LayoutAdmin";
+    using var sqlVendor = new sql_z_bas_vendor();
+    using var sqlPlaceList = new sql_z_bas_place();
+    var vendorModel = sqlVendor.GetDataByNo(SessionService.BaseNo);
+
+    var placeList = sqlPlaceList.GetVendorPlaceList(SessionService.BaseNo);
+    if (placeList != null && placeList.Count > 0 &&  SessionService.CategoryNo != "new")
+    {
+        if (!placeList.Select(p => p.mno).Contains(SessionService.CategoryNo))
+        {
+            SessionService.CategoryNo = placeList.First().mno;
+        }
+    }
+
+    var placeModel = sqlPlaceList.GetProductPlace(SessionService.BaseNo, SessionService.CategoryNo);
+    if (placeModel == null) placeModel = new herbstracing.Models.z_bas_place();
+    if (SessionService.CategoryNo == "new") SessionService.CategoryNo = "";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="row">
+    <div class="col-md-3">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th>
+                            @Html.DisplayNameSortFor(model => model.mno)
+                        </th>
+                        <th>
+                            @Html.DisplayNameSortFor(model => model.mname)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        ActionService.RowId = item.rowid;
+                        ActionService.RowData = $"{item.mno} {item.mname}";
+                        string className = (SessionService.BaseNo == item.mno) ? "bg-success text-white fw-bold" : "";
+
+                        <tr>
+                            <td>
+                                @Html.ActionLink("選取", "Select", ActionService.Controller, new { area = ActionService.Area ,
+                                id = item.mno} , new { @class = "btn btn-primary btn-sm" })
+                        </td>
+                        <td class="@className">
+                            @Html.DisplayFor(modelItem => item.mno)
+                        </td>
+                        <td class="table-wrap @className">
+                            @Html.DisplayFor(modelItem => item.mname)
+                        </td>
+                    </tr>
+                                        }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-12 fs-5 fw-bold">
+                <table>
+                    <tr>
+                        <td class="me-1">農戶編號：</td>
+                        <td class="me-2 text-danger">@SessionService.BaseNo</td>
+                        <td class="me-1">農戶名稱：</td>
+                        <td class="me-2 text-danger">@vendorModel?.mname</td>
+                        <td class="me-1">產地：</td>
+                        <td class="me-2">
+                            @if (placeList != null && placeList.Count > 0)
+                            {
+                                @using (Html.BeginForm("Place", ActionService.Controller, new { area = ActionService.Area }, FormMethod.Post))
+                                {
+                                    <select id="placeNo" name="placeNo" class="form-select form-select-sm" style="width:auto;"
+                                        onchange="this.form.submit()">
+                                        @foreach (var place in placeList)
+                                        {
+                                            <option value="@place.mno" selected="@(SessionService.CategoryNo == place.mno)">
+                                                @place.mname</option>
+                                        }
+                                    </select>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-danger">尚無產地資料</span>
+                            }
+                        </td>
+                        <td class="me-2">
+                            @Html.ActionLink("新增產地", "NewPlace", ActionService.Controller, new { area =
+                            ActionService.Area}, new { @class = "btn btn-primary" })
+                        </td>
+                        <td class="me-2">
+                            @Html.ActionLink("上傳圖片1", "PhotoUpload", ActionService.Controller, new { area =
+                            ActionService.Area, id = 1}, new { @class = "btn btn-success" })
+                        </td>
+                        <td class="me-2">
+                            @Html.ActionLink("上傳圖片2", "PhotoUpload", ActionService.Controller, new { area =
+                            ActionService.Area, id = 2}, new { @class = "btn btn-success" })
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("PlaceData", ActionService.Controller, new { area = ActionService.Area }, FormMethod.Post))
+        {
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <table style="background-color: #FFFFFF; width: 100%; border-collapse: collapse; border-spacing: 0px">
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            產地編號
+                        </td>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            <input id="txtMno" name="txtMno" type="text" value="@placeModel.mno" />
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <input id="txtMname" name="txtMname" type="text" value="@placeModel.mname" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;"
+                            rowspan="4">
+                            地理環境
+                        </td>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            產地位址/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMaddress" name="txtMaddress" type="text" value="@placeModel.maddress" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMaddress" name="txteMaddress" type="text" value="@placeModel.emaddress" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            區域屬性/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtAreaType" name="txtAreaType" type="text" value="@placeModel.area_type" />
+                                    </td>
+                                    <td>
+                                        <input id="txteAreaType" name="txteAreaType" type="text" value="@placeModel.earea_type" />
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            海拔高度/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMheight" name="txtMheight" type="text" value="@placeModel.mhight" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMheight" name="txteMheight" type="text" value="@placeModel.emhight" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            耕種面積/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMarea" name="txtMarea" type="text" value="@placeModel.marea" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMarea" name="txteMarea" type="text" value="@placeModel.emarea" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;" rowspan="5">
+                            氣　　候
+                        </td>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            年平均氣溫/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMtemperature" name="txtMtemperature" type="text" value="@placeModel.mtemperature" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMtemperature" name="txteMtemperature" type="text" value="@placeModel.emtemperature" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            年平均降雨量/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMrain" name="txtMrain" type="text" value="@placeModel.mrain" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMrain" name="txteMrain" type="text" value="@placeModel.emrain" />
+                                    </td>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            無霜期/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMfrost" name="txtMfrost" type="text" value="@placeModel.mfrost" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMfrost" name="txteMfrost" type="text" value="@placeModel.emfrost" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            極端最高氣溫/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtTempHeight" name="txtTempHeight" type="text" value="@placeModel.temp_height" />
+                                    </td>
+                                    <td>
+                                        <input id="txteTempHeight" name="txteTempHeight" type="text" value="@placeModel.etemp_height" />
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            極端最低氣溫/英文
+                        </td>
+                        <td style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtTempLow" name="txtTempLow" type="text" value="@placeModel.temp_low" />
+                                    </td>
+                                    <td>
+                                        <input id="txteTempLow" name="txteTempLow" type="text" value="@placeModel.etemp_low" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                            style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            灌溉水源頭/英文
+                        </td>
+                        <td colspan="2"
+                            style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMWater" name="txtMWater" type="text" value="@placeModel.mwater" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMWater" name="txteMWater" type="text" value="@placeModel.emwater" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            周圍環境/英文
+                        </td>
+                        <td colspan="2"
+                            style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <input id="txtMenvironment" name="txtMenvironment" type="text" value="@placeModel.menvironment" />
+                                    </td>
+                                    <td>
+                                        <input id="txteMenvironment" name="txteMenvironment" type="text" value="@placeModel.emenvironment" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none none solid; border-width: 1px; border-color: #808080; width: 80px;">
+                            地圖顯示
+                        </td>
+                        <td colspan="2" style="border-style: solid solid none solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td style="width: 80px">
+                                        是否顯示
+                                    </td>
+                                    <td style="width: 80px">
+                                        <input id="cbxIsMap" name="cbxIsMap" type="checkbox" value="@placeModel.ismap" />
+                                    </td>
+                                    <td style="width: 80px; text-align: right">
+                                        經度
+                                    </td>
+                                    <td style="width: 80px">
+                                        <input id="txtMmapx" name="txtMmapx" type="text" value="@placeModel.mapx" />
+                                    </td>
+                                    <td style="width: 80px; text-align: right">
+                                        緯度
+                                    </td>
+                                    <td>
+                                        <input id="txtMmapy" name="txtMmapy" type="text" value="@placeModel.mapy" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="width: 100%">
+                                <tr>
+                                    <td style="width: 80px">
+                                        地圖地址
+                                    </td>
+                                    <td>
+                                        <input id="txtMapAddr" name="txtMapAddr" type="text" value="@placeModel.mapaddr" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="width: 100%">
+                                <tr>
+                                    <td style="width: 80px">
+                                        地圖描述
+                                    </td>
+                                    <td>
+                                        <input id="txtMapDesc" name="txtMapDesc" type="text" value="@placeModel.mapdesc" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid none solid solid; border-width: 1px; border-color: #808080">
+                            產地圖片
+                        </td>
+                        <td colspan="2" style="border-style: solid solid solid solid; border-width: 1px; border-color: #808080">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td>
+                                        <img src="@Url.Content(placeModel.PlaceImage1)" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="@Url.Content(placeModel.PlaceImage2)" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <input type="submit" value="儲存產地資料" class="btn btn-primary mt-3" />
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

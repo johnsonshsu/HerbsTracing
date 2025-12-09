@@ -1,0 +1,65 @@
+@model IEnumerable<herbstracing.Models.z_bas_test_item>
+
+@{
+    ViewData["Title"] = "檢測項目主檔列表";
+    Layout = "_LayoutAdmin";
+
+}
+
+<ul class="nav nav-pills">
+    <li class="nav-item">
+        <a class="nav-link @(SessionService.BaseNo == "W" ? "active" : "")"
+            href="@Url.Action(ActionService.Init , ActionService.Controller , new {area = ActionService.Area , id = "W"})">水分檢測項目</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(SessionService.BaseNo == "P" ? "active" : "")"
+            href="@Url.Action(ActionService.Init , ActionService.Controller , new {area = ActionService.Area , id = "P"})">土壤檢測項目</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(SessionService.BaseNo == "I" ? "active" : "")"
+            href="@Url.Action(ActionService.Init , ActionService.Controller , new {area = ActionService.Area , id = "I"})">藥材檢測項目</a>
+    </li>
+</ul>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.seq)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_name)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.test_no} {item.test_name}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.seq)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.test_no)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.test_name)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

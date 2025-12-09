@@ -5,15 +5,31 @@ namespace herbstracing.Models
     {
         [NotMapped]
         [Display(Name = "店家資訊")]
-        public string mtitle { get; set; } = null!;
+        public string? mtitle { get; set; } = "";
         [NotMapped]
         [Display(Name = "性別")]
         public string? msex_name
         {
             get
             {
-                return msex == "M" ? "男" : msex == "F" ? "女" : "其他";
+                return (msex == null) ? "其他" : msex == "M" ? "男" : msex == "F" ? "女" : "其他";
             }
+        }
+        [NotMapped]
+        [Display(Name = "廠商類別")]
+        public string? mcode_name
+        {
+            get
+            {
+                return (mcode == null) ? "其他" : mcode == "F" ? "農戶" : mcode == "V" ? "供應商" : "其他";
+            }
+        }
+        [NotMapped]
+        [Display(Name = "地圖顯示")]
+        public bool isshowmap
+        {
+            get { return (ismap == null) ? false : ismap.ToLower() == "true" ? true : false; }
+            set { ismap = value == true ? "TRUE" : "FALSE"; }
         }
     }
 }
@@ -77,17 +93,25 @@ public partial class metaz_bas_vendor
     public string? remark { get; set; }
     public string? mzipno { get; set; }
     public string? msname { get; set; }
+    [Display(Name = "負責人")]
     public string? mboss { get; set; }
+    [Display(Name = "聯絡人")]
     public string? mcontactor { get; set; }
     public string? mweburl { get; set; }
     public string? mtime { get; set; }
     public string? msubject { get; set; }
     public string? mskill { get; set; }
     public string? mdescribe { get; set; }
+    [Display(Name = "登入密碼")]
     public string? mpassword { get; set; }
+    [Display(Name = "地圖地址")]
     public string? mapaddr { get; set; }
+    [Display(Name = "地圖說明")]
     public string? mapdesc { get; set; }
+    [Display(Name = "地圖經度")]
     public string? mapx { get; set; }
+    [Display(Name = "地圖緯度")]
     public string? mapy { get; set; }
+    [Display(Name = "地圖顯示")]
     public string? ismap { get; set; }
 }

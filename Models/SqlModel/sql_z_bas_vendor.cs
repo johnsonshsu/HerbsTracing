@@ -23,24 +23,23 @@ namespace herbstracing.Models
         public override string GetSQLSelect()
         {
             string str_query = @"
-SELECT z_bas_vendor.rowid, z_bas_vendor.mno, z_bas_vendor.mcode, z_bas_vendor.mname, z_bas_vendor.marea, 
-z_bas_vendor.mserialno, z_bas_vendor.mproduct, z_bas_vendor.cdate, z_bas_vendor.adate, z_bas_vendor.mstatus, 
-z_bas_vendor.msex, z_bas_vendor.mtel, z_bas_vendor.mfax, z_bas_vendor.mmobil, z_bas_vendor.country_no, 
-z_bas_country.mname AS country_name, z_bas_vendor.province_no, z_bas_province.mname AS province_name, 
-z_bas_vendor.city_no, z_bas_city.mname AS city_name, z_bas_vendor.town_no, z_bas_town.mname AS town_name, 
-z_bas_vendor.road_no, z_bas_road.mname AS road_name, z_bas_vendor.maddlead, z_bas_vendor.maddress, 
-z_bas_vendor.maddr, z_bas_vendor.memail, z_bas_vendor.userno, z_bas_vendor.vdate, z_bas_vendor.remark, 
-z_bas_vendor.mzipno, z_bas_vendor.msname, z_bas_vendor.mboss, z_bas_vendor.mcontactor, z_bas_vendor.mweburl, 
-z_bas_vendor.mtime, z_bas_vendor.msubject, z_bas_vendor.mskill, z_bas_vendor.mdescribe, z_bas_vendor.mpassword, 
-z_bas_vendor.mapaddr, z_bas_vendor.mapdesc, z_bas_vendor.mapx, z_bas_vendor.mapy, z_bas_vendor.ismap , 
-z_bas_vendor.mname + ' ' + z_bas_vendor.mtel AS mtitle 
-FROM z_bas_vendor 
-LEFT OUTER JOIN z_bas_city ON z_bas_vendor.city_no = z_bas_city.mno 
-LEFT OUTER JOIN z_bas_town ON z_bas_vendor.town_no = z_bas_town.mno 
-LEFT OUTER JOIN z_bas_road ON z_bas_vendor.road_no = z_bas_road.mno 
-LEFT OUTER JOIN z_bas_place ON z_bas_vendor.mno = z_bas_place.user_no 
-LEFT OUTER JOIN z_bas_province ON z_bas_vendor.province_no = z_bas_province.mno 
-LEFT OUTER JOIN z_bas_country ON z_bas_vendor.country_no = z_bas_country.mno 
+SELECT z_bas_vendor.rowid, z_bas_vendor.mno, z_bas_vendor.mcode, z_bas_vendor.mname, z_bas_vendor.marea,
+z_bas_vendor.mserialno, z_bas_vendor.mproduct, z_bas_vendor.cdate, z_bas_vendor.adate, z_bas_vendor.mstatus,
+z_bas_vendor.msex, z_bas_vendor.mtel, z_bas_vendor.mfax, z_bas_vendor.mmobil, z_bas_vendor.country_no,
+z_bas_country.mname AS country_name, z_bas_vendor.province_no, z_bas_province.mname AS province_name,
+z_bas_vendor.city_no, z_bas_city.mname AS city_name, z_bas_vendor.town_no, z_bas_town.mname AS town_name,
+z_bas_vendor.road_no, z_bas_road.mname AS road_name, z_bas_vendor.maddlead, z_bas_vendor.maddress,
+z_bas_vendor.maddr, z_bas_vendor.memail, z_bas_vendor.userno, z_bas_vendor.vdate, z_bas_vendor.remark,
+z_bas_vendor.mzipno, z_bas_vendor.msname, z_bas_vendor.mboss, z_bas_vendor.mcontactor, z_bas_vendor.mweburl,
+z_bas_vendor.mtime, z_bas_vendor.msubject, z_bas_vendor.mskill, z_bas_vendor.mdescribe, z_bas_vendor.mpassword,
+z_bas_vendor.mapaddr, z_bas_vendor.mapdesc, z_bas_vendor.mapx, z_bas_vendor.mapy, z_bas_vendor.ismap ,
+z_bas_vendor.mname + ' ' + z_bas_vendor.mtel AS mtitle
+FROM z_bas_vendor
+LEFT OUTER JOIN z_bas_city ON z_bas_vendor.city_no = z_bas_city.mno
+LEFT OUTER JOIN z_bas_town ON z_bas_vendor.town_no = z_bas_town.mno
+LEFT OUTER JOIN z_bas_road ON z_bas_vendor.road_no = z_bas_road.mno
+LEFT OUTER JOIN z_bas_province ON z_bas_vendor.province_no = z_bas_province.mno
+LEFT OUTER JOIN z_bas_country ON z_bas_vendor.country_no = z_bas_country.mno
 ";
             return str_query;
         }
@@ -59,22 +58,36 @@ LEFT OUTER JOIN z_bas_country ON z_bas_vendor.country_no = z_bas_country.mno
             return model;
         }
 
-        public override List<z_bas_vendor> GetDataList(string id)
+        public List<z_bas_vendor> GetDataListByCode(string codeNo, string statusNo, string searchText = "")
         {
-            string str_query = GetSQLSelect();
-            str_query += " WHERE z_bas_vendor.mno = @id ORDER BY z_bas_vendor.mno ASC";
-            DynamicParameters parm = new DynamicParameters();
-            parm.Add("id", id);
-            var model = dpr.ReadAll<z_bas_vendor>(str_query, parm);
+            var models = GetDataList(searchText);
+            var model = models.Where(x => x.mcode == codeNo && x.mstatus == statusNo).ToList();
+            return model;
+        }
+
+        public List<z_bas_vendor> GetDataListByCode(string codeNo, string searchText = "")
+        {
+            var models = GetDataList(searchText);
+            var model = models.Where(x => x.mcode == codeNo).ToList();
             return model;
         }
 
         public override z_bas_vendor GetData(string id)
         {
             string str_query = GetSQLSelect();
-            str_query += " WHERE z_bas_vendor.mno = @id";
+            str_query += " WHERE z_bas_vendor.rowid = @rowid";
             DynamicParameters parm = new DynamicParameters();
-            parm.Add("id", id);
+            parm.Add("rowid", id);
+            var model = dpr.ReadSingle<z_bas_vendor>(str_query, parm);
+            return model;
+        }
+
+        public z_bas_vendor GetDataByNo(string vendornNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_vendor.mno = @mno";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("mno", vendornNo);
             var model = dpr.ReadSingle<z_bas_vendor>(str_query, parm);
             return model;
         }

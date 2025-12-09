@@ -1,16 +1,19 @@
 
 namespace herbstracing.Models
 {
-    [ModelMetadataType(typeof(mataz_sys_news))]
+    [ModelMetadataType(typeof(meta_z_sys_news))]
     public partial class z_sys_news
     {
         [NotMapped]
         [Display(Name = "內容")]
         public string? mshort_describe { get; set; }
+        [NotMapped]
+        [Display(Name = "啟用")]
+        public bool misenabled { get; set; }
     }
 }
 
-public class mataz_sys_news
+public class meta_z_sys_news
 {
     [Key]
     public string rowid { get; set; } = null!;

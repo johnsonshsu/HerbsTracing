@@ -1,0 +1,88 @@
+@model IEnumerable<herbstracing.Models.z_qcm_environment>
+
+@{
+    ViewData["Title"] = "產地水質檢驗記錄列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.user_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.user_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.place_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.place_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.lot_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.sdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark_name)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                        @Html.ActionLink("明細",ActionService.Detail, ActionService.Controller,
+                            new { area = ActionService.Area , codeNo = item.mcode , mno = item.mno} , new { @class = "btn btn-success" } )
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.user_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.user_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.place_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.place_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.lot_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sdate)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.remark_name)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

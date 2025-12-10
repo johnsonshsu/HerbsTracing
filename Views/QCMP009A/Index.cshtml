@@ -1,0 +1,75 @@
+@model IEnumerable<herbstracing.Models.z_qcm_item_testitem>
+
+@{
+    ViewData["Title"] = "藥材預設檢驗項目列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                    @Html.ActionLink("返回", "Init", "QCMP009", new { area = ActionService.Area  , id = SessionService.ParentPage }, new { @class = "btn btn-primary" })
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.seq)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_value)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_base)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_unit)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.test_result)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid ?? "";
+                ActionService.RowData = $"{item.seq} {item.test_no} {item.test_name}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.seq)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.test_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.test_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.test_value)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.test_base)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.test_unit)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.test_result)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

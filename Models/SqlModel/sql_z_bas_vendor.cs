@@ -13,7 +13,7 @@ namespace herbstracing.Models
             OrderByDirection = SessionService.SortDirection;
             DefaultOrderByColumn = "z_bas_vendor.mno ";
             DefaultOrderByDirection = "ASC";
-            DropDownValueColumn = "z_bas_vendor.mname";
+            DropDownValueColumn = "z_bas_vendor.mno";
             DropDownTextColumn = "z_bas_vendor.mname";
             DropDownOrderColumn = "z_bas_vendor.mno ASC";
             if (string.IsNullOrEmpty(OrderByColumn)) OrderByColumn = DefaultOrderByColumn;

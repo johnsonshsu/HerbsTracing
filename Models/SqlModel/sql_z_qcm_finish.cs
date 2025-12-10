@@ -23,9 +23,12 @@ namespace herbstracing.Models
         public override string GetSQLSelect()
         {
             string str_query = @"
-SELECT rowid,mno,mdate,plot_no,prod_no,prod_name,clot_no,slot_no,item_no 
-,item_name,expire_date,report_date,isconfirm,report_no,remark 
-FROM z_qcm_finish 
+SELECT z_qcm_finish.rowid, z_qcm_finish.mno, z_qcm_finish.mdate,
+z_qcm_finish.plot_no, z_qcm_finish.prod_no, z_qcm_finish.prod_name,
+z_qcm_finish.clot_no, z_qcm_finish.slot_no, z_qcm_finish.item_no,
+z_qcm_finish.item_name, z_qcm_finish.expire_date, z_qcm_finish.report_date,
+z_qcm_finish.isconfirm, z_qcm_finish.report_no, z_qcm_finish.remark
+FROM z_qcm_finish
 ";
             return str_query;
         }

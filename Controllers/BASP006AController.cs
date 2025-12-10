@@ -134,10 +134,24 @@ namespace HerbsTracing.Controllers
         public IActionResult Delete(string id = "")
         {
             //執行刪除資料
-            using var sqlData = new sql_z_bas_item();
+            using var sqlData = new sql_z_bas_item_bom();
             sqlData.Delete(id);
             //返回員工資料列表
             return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 資料刪除
+        /// </summary>
+        /// <param name="id">要刪除的Key值</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult DeleteRow(string id = "")
+        {
+            using var sqlData = new sql_z_bas_item_bom();
+            sqlData.Delete(id);
+            var result = new dmJsonMessage() { Mode = true, Message = "資料已刪除!!" };
+            return Json(result);
         }
 
         /// <summary>

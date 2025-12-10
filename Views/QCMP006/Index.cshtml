@@ -1,0 +1,96 @@
+@model IEnumerable<herbstracing.Models.z_qcm_finish>
+
+@{
+    ViewData["Title"] = "成品檢驗記錄列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.expire_date)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.report_date)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.plot_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.slot_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.prod_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.prod_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.report_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                        @Html.ActionLink("檢驗",ActionService.Detail, ActionService.Controller,
+                            new { area = ActionService.Area , id = item.mno} , new { @class = "btn btn-success" } )
+                        @Html.ActionLink("BOM","Bom", ActionService.Controller,
+                            new { area = ActionService.Area , mno = item.mno , categoryNo = item.plot_no} , new { @class = "btn btn-success" } )
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.expire_date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.report_date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.plot_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.slot_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.prod_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.prod_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.report_no)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.remark)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

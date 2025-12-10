@@ -81,14 +81,14 @@ public class TracingService : BaseClass
     /// <summary>
     /// 製造序號
     /// </summary>
-    public string SerialNo { 
-        get 
-        { 
+    public string SerialNo {
+        get
+        {
             if (TracingCode.Length == 22)
                 return TracingCode.Substring(TracingCode.Length - 3, 3);
             else
-                return TracingCode.Substring(TracingCode.Length - 5, 5); 
-        } 
+                return TracingCode.Substring(TracingCode.Length - 5, 5);
+        }
     }
     /// <summary>
     /// 報告類型
@@ -177,7 +177,7 @@ public class TracingService : BaseClass
         var bomModel = new sql_z_bas_item_bom();
         var itemBOMList = bomModel.GetDataList(tracingHead.ProdNo, "");
         var testItem = new sql_z_qcm_item_testitem();
-        var testItemList = testItem.GetDataList(itemNo, "I");
+        var testItemList = testItem.GetDataListByItemCode(itemNo, "I");
         var cityModel = new sql_z_bas_city();
         var vendorModel = new sql_z_bas_vendor();
         var placeModel = new sql_z_bas_place();

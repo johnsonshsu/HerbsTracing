@@ -1,0 +1,51 @@
+@model IEnumerable<herbstracing.Models.z_qcm_finish_bom>
+
+@{
+    ViewData["Title"] = "成品檢驗記錄列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                    @Html.ActionLink("返回", "Init", "QCMP006", new { area = ActionService.Area , id = SessionService.ParentPage }, new { @class = "btn btn-primary" })
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.clot_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.item_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.item_name)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.clot_no} {item.item_no} {item.item_name}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.clot_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.item_no)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.item_name)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -48,5 +48,31 @@ FROM z_bas_test
             var model = dpr.ReadSingle<z_bas_test>(str_query, parm);
             return model;
         }
+
+        public List<z_bas_test> GetDataListByCode(string codeNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_test.code_no = @code_no";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("code_no", codeNo);
+            var model = dpr.ReadAll<z_bas_test>(str_query, parm);
+            return model;
+        }
+
+        public List<SelectListItem> GetDropDownListByCode(string codeNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_test.mcode = @mcode";
+            str_query += " ORDER BY z_bas_test.mno ASC";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("mcode", codeNo);
+            var models = dpr.ReadAll<z_bas_test>(str_query, parm);
+            var model = models.Select(x => new SelectListItem
+            {
+                Value = x.mno,
+                Text = x.mno + " " + x.mname
+            }).ToList();
+            return model;
+        }
     }
 }

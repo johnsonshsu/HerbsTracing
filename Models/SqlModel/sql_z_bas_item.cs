@@ -52,5 +52,27 @@ FROM z_bas_item
             var model = dpr.ReadSingle<z_bas_item>(str_query, parm);
             return model;
         }
+
+        public List<z_bas_item> GetDataListByCode(string codeNo)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_bas_item.mcode = @mcode";
+            str_query += " ORDER BY z_bas_item.mno ASC";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("mcode", codeNo);
+            var model = dpr.ReadAll<z_bas_item>(str_query, parm);
+            return model;
+        }
+
+        public List<SelectListItem> GetDataListByCodeDropdown(string codeNo)
+        {
+            var model = GetDataListByCode(codeNo);
+            var list = model.Select(x => new SelectListItem
+            {
+                Value = x.mno,
+                Text = $"{x.mno} {x.mname}"
+            }).ToList();
+            return list;
+        }
     }
 }

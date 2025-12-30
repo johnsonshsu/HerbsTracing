@@ -1,0 +1,142 @@
+@model IEnumerable<herbstracing.Models.z_sys_security>
+
+@{
+    ViewData["Title"] = "帳號權限設定作業";
+    Layout = "_LayoutAdmin";
+    using var userData = new sql_z_sys_user();
+    var userList = userData.GetDropDownListByRole(SessionService.StringValue1, SessionService.StringValue2);
+    var userModel = new z_sys_user();
+    userModel.mno = SessionService.StringValue2;
+    userModel.mname = SessionService.StringValue3;
+    var codeList = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "使用者", Value = "user" },
+        new SelectListItem { Text = "農戶", Value = "farmer" },
+        new SelectListItem { Text = "管理者", Value = "boss" }
+    };
+    codeList.Where(x => x.Value == SessionService.StringValue1).First().Selected = true;
+}
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="float-start ms-1">
+            @using (Html.BeginForm("SetUserCode", ActionService.Controller, new { area = ActionService.Area },
+                    FormMethod.Post, true, new { id = "formUserCode" }))
+            {
+                <table>
+                    <tr>
+                        <td>
+                            <span class="control-label fw-bold">帳號類別：</span>
+                        </td>
+                        <td class="pe-2" style="min-width: 250px;">
+                        @Html.DropDownListFor(model => userModel.mcode, codeList, new { @class = "form-control selectpicker", @data_live_search = "true", id = "userCodeDropdown" })
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+        <div class="float-start ms-1">
+            @using (Html.BeginForm("SetUser", ActionService.Controller, new { area = ActionService.Area },
+                        FormMethod.Post, true, new { id = "formUserNo" }))
+            {
+                <table>
+                    <tr>
+                        <td>
+                            <span class="control-label fw-bold">使用者帳號：</span>
+                        </td>
+                        <td class="pe-2" style="min-width: 250px;">
+                            @Html.DropDownListFor(model => userModel.mno, userList, new { @class = "form-control selectpicker", @data_live_search = "true", id = "userNoDropdown" })
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+<hr />
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.prg_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.prg_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.is_enabled)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.is_add)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.is_edit)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.is_delete)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.is_print)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.is_confirm)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.prg_no} {item.prg_name}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.prg_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.prg_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.is_enabled)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.is_add)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.is_edit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.is_delete)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.is_print)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.is_confirm)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section ScriptsBody {
+    <script>
+        $(document).ready(function() {
+            $('#userCodeDropdown').on('changed.bs.select', function() {
+                $('#formUserCode').submit();
+            });
+            $('#userNoDropdown').on('changed.bs.select', function() {
+                $('#formUserNo').submit();
+            });
+        });
+    </script>
+}

@@ -48,8 +48,13 @@ namespace HerbsTracing.Controllers
                 return View(model);
             }
 
+            //設定登入狀態
+            string clientIP = AppService.GetClientIPAddress(HttpContext);
+            using var iplog = new sql_z_sys_iplog();
+            iplog.LogIP("Login","" , "" ,clientIP);
+
             //判斷使用者角色，進入不同的首頁
-            var data = user.GetData(model.UserNo);
+            var data = user.GetDataByNo(model.UserNo);
             if (data.roleno == "user" || data.roleno == "admin" || data.roleno == "boss")
                 return RedirectToAction(ActionService.Index, "Admin", new { area = ActionService.Area });
 

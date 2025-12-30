@@ -27,7 +27,8 @@ SELECT z_bas_item.rowid,z_bas_item.mcode,z_bas_item.mtype,z_bas_item.mno,z_bas_i
 ,z_bas_item.mename,z_bas_item.munit,z_bas_item.mplace,z_bas_item.mparts,z_bas_item.msource
 ,z_bas_item.mdescribe,z_bas_item.mremark,z_bas_item.msale,z_bas_item.mprice,z_bas_item.issale
 ,z_bas_item.ispicture,z_bas_item.pictureurl,z_bas_item.cart_unit,z_bas_item.cart_price
-,z_bas_item.cart_undiscount
+,z_bas_item.cart_undiscount , '~/images/item/' + z_bas_item.mno + '.jpg' AS item_image1 ,
+'~/images/item/' + z_bas_item.mno + '_1.jpg' AS item_image2
 FROM z_bas_item
 ";
             return str_query;

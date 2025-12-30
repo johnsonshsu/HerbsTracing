@@ -1,0 +1,55 @@
+@model IEnumerable<herbstracing.Models.z_sys_role>
+
+@{
+    ViewData["Title"] = "角色基本資料維護";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.isenable)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.msort)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mname)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.isenable)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.msort)
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.mname)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -6,6 +6,24 @@ namespace herbstracing.Models
         [NotMapped]
         [Display(Name = "模組名稱")]
         public string? module_name { get; set; }
+        [NotMapped]
+        [Display(Name = "是否啟用")]
+        public bool is_enabled { get; set; }
+        [NotMapped]
+        [Display(Name = "新增權限")]
+        public bool is_add { get; set; }
+        [NotMapped]
+        [Display(Name = "編輯權限")]
+        public bool is_edit { get; set; }
+        [NotMapped]
+        [Display(Name = "刪除權限")]
+        public bool is_delete { get; set; }
+        [NotMapped]
+        [Display(Name = "列印權限")]
+        public bool is_print { get; set; }
+        [NotMapped]
+        [Display(Name = "確認權限")]
+        public bool is_confirm { get; set; }
     }
 }
 

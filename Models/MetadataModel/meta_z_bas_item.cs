@@ -12,6 +12,12 @@ namespace herbstracing.Models
         [NotMapped]
         [Display(Name = "報告類別")]
         public string? mplace_name { get { return (mcode == "A" ? "廠內報告" : (mcode == "B" ? "PDF 檔" : (mcode == "C") ? "廠外連結" : "")); } }
+        [NotMapped]
+        [Display(Name = "圖片1")]
+        public string? item_image1 { get; set; }
+        [NotMapped]
+        [Display(Name = "圖片2")]
+        public string? item_image2 { get; set; }
     }
 }
 

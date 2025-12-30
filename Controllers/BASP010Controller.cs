@@ -1,32 +1,208 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace HerbsTracing.Controllers
 {
-    [Route("[controller]")]
     public class BASP010Controller : Controller
     {
-        private readonly ILogger<BASP010Controller> _logger;
-
-        public BASP010Controller(ILogger<BASP010Controller> logger)
+        /// <summary>
+        /// 資料初始事件
+        /// </summary>
+        /// <param name="id">目前頁數</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Init(int id = 0)
         {
-            _logger = logger;
+            //這裏可以寫入初始程式
+            SessionService.PrgNo = "BASP010"; //預設程式編號
+            SessionService.PrgName = "契作合約審核作業"; //預設程式名稱
+            SessionService.PageMasterSize = 10; //預設表頭每頁筆數
+            SessionService.SearchText = "";
+            SessionService.SortColumn = "z_bas_contract.mno";
+            SessionService.SortDirection = "ASC";
+            int int_page = (id > 0) ? id : 1;
+            //返回員工列表
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area, id = int_page });
         }
 
-        public IActionResult Index()
+        /// <summary>
+        /// 資料列表
+        /// </summary>
+        /// <param name="id">目前頁數</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Index(int id = 1)
         {
-            return View();
+            //設定參數
+            int pageSize = 10;
+            //設定目前頁面動作名稱、子動作名稱、動作卡片大小
+            ActionService.SetActionName(enAction.Index);
+            ActionService.SetSubActionName();
+            ActionService.SetActionCardSize(enCardSize.Max);
+            //取得資料列表集合
+            using var sqlData = new sql_z_bas_contract();
+            var model = sqlData.GetUnConfirmDataList(SessionService.SearchText).ToPagedList(id, pageSize);
+            ViewBag.PageInfo = $"( {id} / {model.PageCount} )";
+            ViewBag.SearchText = SessionService.SearchText;
+            return View(model);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        /// <summary>
+        /// 資料新增
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Create()
         {
-            return View("Error!");
+            ActionService.SetActionName(enAction.Create);
+            return RedirectToAction(ActionService.CreateEdit, ActionService.Controller, new { area = ActionService.Area, id = "0" });
+        }
+
+        /// <summary>
+        /// 資料修改
+        /// </summary>
+        /// <param name="id">要修改的Key值</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Edit(string id = "")
+        {
+            ActionService.SetActionName(enAction.Edit);
+            return RedirectToAction(ActionService.CreateEdit, ActionService.Controller, new { area = ActionService.Area, id = id });
+        }
+
+        /// <summary>
+        /// 資料新增或修改輸入 (id = 0 為新增 , id > 0 為修改)
+        /// </summary>
+        /// <param name="id">要修改的Key值</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult CreateEdit(string id = "")
+        {
+            //設定目前頁面子動作名稱、動作卡片大小
+            ActionService.SetSubActionName();
+            ActionService.SetActionCardSize(enCardSize.Medium);
+            var model = new z_bas_contract();
+            if (string.IsNullOrEmpty(id) || id == "0")
+            {
+                //新增預設值
+                model.rowid = "0";
+                model.mno = ""; //廠商編號
+            }
+            else
+            {
+                //取得新增或修改的員工資料結構及資料
+                using var sqlData = new sql_z_bas_contract();
+                model = sqlData.GetData(id);
+            }
+            return View(model);
+        }
+
+        /// <summary>
+        /// 資料新增或修改存檔
+        /// </summary>
+        /// <param name="model">使用者輸入的資料模型</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult CreateEdit(z_bas_contract model)
+        {
+            //檢查是否有違反 Metadata 中的 Validation 驗證
+            if (!ModelState.IsValid) return View(model);
+            //執行新增或修改資料
+            using var sqlData = new sql_z_bas_contract();
+            int rowId = string.IsNullOrEmpty(model.rowid) || model.rowid == "0" ? 0 : 1;
+            if (rowId == 0) model.rowid = Guid.NewGuid().ToString();
+            sqlData.CreateEdit(model, rowId);
+            //返回員工資料列表
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 資料刪除
+        /// </summary>
+        /// <param name="id">要刪除的Key值</param>
+        /// /// <returns></returns>
+        [HttpGet]
+        public IActionResult Delete(string id = "")
+        {
+            //執行刪除資料
+            using var sqlData = new sql_z_bas_contract();
+            sqlData.Delete(id);
+            //返回員工資料列表
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 資料刪除
+        /// </summary>
+        /// <param name="id">要刪除的Key值</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult DeleteRow(string id = "")
+        {
+            using var sqlData = new sql_z_bas_contract();
+            sqlData.Delete(id);
+            var result = new dmJsonMessage() { Mode = true, Message = "資料已刪除!!" };
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 資料刪除
+        /// </summary>
+        /// <param name="id">要刪除的Key值</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult ConfirmRow(string id = "")
+        {
+            using var sqlData = new sql_z_bas_contract();
+            string confirmMessage = sqlData.UpdateConfirm(id, true);
+            if (string.IsNullOrEmpty(confirmMessage)) confirmMessage = "資料已核准!!";
+            var result = new dmJsonMessage() { Mode = true, Message = confirmMessage };
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 查詢
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Search()
+        {
+            object obj_text = Request.Form["SearchText"];
+            SessionService.SearchText = (obj_text == null) ? string.Empty : obj_text.ToString();
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 欄位排序
+        /// </summary>
+        /// <param name="id">指定排序的欄位</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Sort(string id)
+        {
+            if (SessionService.SortColumn == id)
+            {
+                SessionService.SortDirection = (SessionService.SortDirection == "asc") ? "desc" : "asc";
+            }
+            else
+            {
+                SessionService.SortColumn = id;
+                SessionService.SortDirection = "asc";
+            }
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        [HttpGet]
+        public IActionResult Detail(string id = "")
+        {
+            using var sqlData = new sql_z_bas_contract();
+            var model = sqlData.GetData(id);
+            SessionService.ParentPage = SessionService.PageMaster;
+            SessionService.BaseNo = model.user_no;
+            SessionService.BaseName = model.user_name;
+            SessionService.CategoryNo = model.place_no;
+            SessionService.CategoryName = model.place_name;
+            return RedirectToAction(ActionService.Init, "BASP010A", new { area = ActionService.Area});
         }
     }
 }

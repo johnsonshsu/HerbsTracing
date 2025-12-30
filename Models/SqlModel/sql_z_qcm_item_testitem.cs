@@ -26,6 +26,7 @@ namespace herbstracing.Models
 SELECT z_qcm_item_testitem.rowid , z_qcm_item_testitem.parentid,
 z_qcm_item_testitem.mno,z_qcm_item_testitem.seq,
 z_qcm_item_testitem.test_no, z_bas_test.mname AS test_name,
+z_bas_test.mename AS test_ename,
 z_qcm_item_testitem.test_value,z_qcm_item_testitem.test_base,
 z_qcm_item_testitem.test_unit,z_qcm_item_testitem.test_result
 FROM z_qcm_item_testitem

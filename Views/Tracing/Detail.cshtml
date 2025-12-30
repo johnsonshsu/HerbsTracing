@@ -3,6 +3,7 @@
     ViewData["Title"] = "藥材檢測明細";
     Layout = "_LayoutLite";
     string TrcOK = (SessionService.LanguageNo == "zh-TW") ? "~/images/WebForm/trcok_tw.png" : "~/images/WebForm/trcok_eng.png";
+    TrcOK += "?t=" + DateTime.Now.Ticks.ToString();
 }
 
 <div class="container-fluid">
@@ -27,16 +28,28 @@
                         <thead class="table-secondary">
                             <tr>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_name)
+                                    @if (SessionService.LanguageNo == "zh-TW")
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_name)}
+                                    else
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_ename)}
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_base)
+                                    @if (SessionService.LanguageNo == "zh-TW")
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_base)}
+                                     else
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_ebase)}
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_unit)
+                                    @if (SessionService.LanguageNo == "zh-TW")
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_unit)}
+                                    else
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_eunit)}
                                 </th>
                                 <th class="table-wrap">
-                                    @Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_result)
+                                    @if (SessionService.LanguageNo == "zh-TW")
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_result)}
+                                    else
+                                        {@Html.DisplayNameFor(model => model.TestItemList.FirstOrDefault().test_eresult)}
                                 </th>
                             </tr>
                         </thead>
@@ -45,7 +58,10 @@
                             {
                                 <tr>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.test_name)
+                                        @if (SessionService.LanguageNo == "zh-TW")
+                                            {@Html.DisplayFor(modelItem => item.test_name)}
+                                        else
+                                            {@Html.DisplayFor(modelItem => item.test_ename)}
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.test_base)

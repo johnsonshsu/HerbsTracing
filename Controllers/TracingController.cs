@@ -7,15 +7,24 @@ namespace HerbsTracing.Controllers
         [HttpGet]
         public IActionResult Search(string id = "")
         {
-            TracingService.TracingCode = id;
+            string str_code = string.IsNullOrEmpty(id) ? "Manual" : "Mobile";
+            string str_id = string.IsNullOrEmpty(id) ? SessionService.SearchText : id;
+            SessionService.SearchText = "";
+
+            TracingService.TracingCode = str_id;
             var tracingService = new TracingService();
-            var errorMessage = tracingService.CheckTracingCode(id);
+            var errorMessage = tracingService.CheckTracingCode(str_id);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 TempData["ErrorMessage"] = errorMessage;
                 return RedirectToAction(ActionService.Index, ActionService.Home, new { area = ActionService.Area });
             }
+
+            //設定登入狀態
+            string clientIP = AppService.GetClientIPAddress(HttpContext);
+            using var iplog = new sql_z_sys_iplog();
+            iplog.LogIP(str_code,str_id , "" ,clientIP);
             return View();
         }
 

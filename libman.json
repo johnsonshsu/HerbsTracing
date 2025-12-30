@@ -15,14 +15,6 @@
       "destination": "wwwroot/lib/bootstrap-select"
     },
     {
-      "library": "Chart.js@4.4.1",
-      "destination": "wwwroot/lib/Chart.js"
-    },
-    {
-      "library": "chartjs-plugin-datalabels@2.2.0",
-      "destination": "wwwroot/lib/Chart.js.datalabels"
-    },
-    {
       "library": "ckeditor@4.20.0",
       "destination": "wwwroot/lib/ckeditor"
     },
@@ -65,6 +57,14 @@
     {
       "library": "toastr.js@2.1.4",
       "destination": "wwwroot/lib/toastr.js"
+    },
+    {
+      "library": "Chart.js@4.5.0",
+      "destination": "wwwroot/lib/Chart.js"
+    },
+    {
+      "library": "chartjs-plugin-datalabels@2.2.0",
+      "destination": "wwwroot/lib/Chart.js.datalabels"
     }
   ]
 }

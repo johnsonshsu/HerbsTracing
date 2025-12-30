@@ -33,6 +33,16 @@ FROM z_qcm_finish
             return str_query;
         }
 
+        public override z_qcm_finish GetData(string id)
+        {
+            string str_query = GetSQLSelect();
+            str_query += " WHERE z_qcm_finish.rowid = @rowid";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("rowid", id);
+            var model = dpr.ReadSingle<z_qcm_finish>(str_query, parm);
+            return model;
+        }
+
         /// <summary>
         /// 取得溯源表頭資訊
         /// </summary>

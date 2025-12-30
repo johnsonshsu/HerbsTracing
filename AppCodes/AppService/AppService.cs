@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 /// <summary>
 /// 應用程式參數類別
@@ -132,5 +133,32 @@ public static class AppService
         var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
         var config = builder.Build();
         return config.GetValue<string>(str_section) ?? "";
+    }
+    /// <summary>
+    /// 取得目前使用者的 IP 位址
+    /// </summary>
+    /// <param name="httpContext">HTTP 內容</param>
+    /// <returns>IP 位址字串</returns>
+    public static string GetClientIPAddress(HttpContext httpContext)
+    {
+        string ipAddress = string.Empty;
+
+        // 檢查是否有 X-Forwarded-For 標頭(透過代理伺服器或負載平衡器)
+        if (httpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
+        {
+            ipAddress = forwardedFor.ToString().Split(',')[0].Trim();
+        }
+        // 檢查是否有 X-Real-IP 標頭
+        else if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var realIp))
+        {
+            ipAddress = realIp.ToString();
+        }
+        // 取得遠端 IP 位址
+        else
+        {
+            ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
+        }
+
+        return ipAddress;
     }
 }

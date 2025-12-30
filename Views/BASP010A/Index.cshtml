@@ -1,0 +1,60 @@
+@model IEnumerable<herbstracing.Models.z_qcm_environment>
+
+@{
+    ViewData["Title"] = "農戶產地檢驗記錄列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+@Html.ActionLink("返回", "Init", "BASP010", new { area = ActionService.Area }, new { @class = "btn btn-primary" , id= SessionService.ParentPage })
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mcode_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.lot_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.sdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark_name)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mcode_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.lot_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sdate)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.remark_name)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

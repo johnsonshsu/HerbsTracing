@@ -84,6 +84,7 @@ namespace HerbsTracing.Controllers
             if (string.IsNullOrEmpty(id) || id == "0")
             {
                 //新增預設值
+                model.rowid = "0";
                 model.mno = ""; //廠商編號
                 model.mcode = "F"; //廠商類別為農戶
                 model.mstatus = "B"; //預設狀態為待審核
@@ -114,7 +115,7 @@ namespace HerbsTracing.Controllers
             //執行新增或修改資料
             using var sqlData = new sql_z_bas_vendor();
             if (string.IsNullOrEmpty(model.mno)) model.mno = sqlData.GetNewVendorNo();
-            int rowId = string.IsNullOrEmpty(model.rowid.ToString()) ? 0 : 1;
+            int rowId = string.IsNullOrEmpty(model.rowid) || model.rowid == "0" ? 0 : 1;
             if (rowId == 0) model.rowid = Guid.NewGuid().ToString();
             model.ismap = model.isshowmap ? "TRUE" : "FALSE";
             sqlData.CreateEdit(model, rowId);

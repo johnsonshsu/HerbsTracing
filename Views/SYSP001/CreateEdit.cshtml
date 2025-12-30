@@ -1,0 +1,73 @@
+@model herbstracing.Models.z_sys_application
+
+@{
+    string str_command = (string.IsNullOrEmpty(Model.rowid) || Model.rowid == "0") ? "新增" : "修改";
+    ViewData["Title"] = $"系統名稱資料{str_command}";
+    Layout = "_LayoutAdmin";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal  mt-2">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.rowid)
+
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.app_name, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.app_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.app_name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.app_version, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.app_version, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.app_version, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.footer1, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.footer1, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.footer1, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.footer2, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.footer2, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.footer2, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.footer3, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.footer3, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.footer3, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.remark, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.remark, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.remark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PartialSubmit")
+}

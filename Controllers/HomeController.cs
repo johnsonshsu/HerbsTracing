@@ -21,7 +21,7 @@ public class HomeController : Controller
     /// 最新消息
     /// </summary>
     /// <param name="id">記錄 Id</param>
-    /// <returns></returns> 
+    /// <returns></returns>
     public IActionResult News(string id = "")
     {
         var sqlModel = new sql_z_sys_news();
@@ -32,7 +32,7 @@ public class HomeController : Controller
     /// <summary>
     /// 產地地圖
     /// </summary>
-    /// <returns></returns> 
+    /// <returns></returns>
     public IActionResult Map()
     {
         return View();
@@ -51,7 +51,7 @@ public class HomeController : Controller
     /// <summary>
     /// 履歷流程
     /// </summary>
-    /// <returns></returns> 
+    /// <returns></returns>
     public IActionResult Flow()
     {
         return View();
@@ -60,7 +60,7 @@ public class HomeController : Controller
     /// <summary>
     /// 藥材簡介
     /// </summary>
-    /// <returns></returns> 
+    /// <returns></returns>
     public IActionResult Item(string id = "A")
     {
         ViewBag.ItemNo = id;
@@ -70,7 +70,7 @@ public class HomeController : Controller
     /// <summary>
     /// 藥材食譜
     /// </summary>
-    /// <returns></returns> 
+    /// <returns></returns>
     public IActionResult Food(string id = "A")
     {
         using var model = new vmFood(id);
@@ -95,13 +95,14 @@ public class HomeController : Controller
             return RedirectToAction(ActionService.Index, ActionService.Home, new { area = ActionService.Area, id = SessionService.Page });
         }
         SessionService.SearchText = str_text;
-        return RedirectToAction(ActionService.Search, "Tracing", new { area = ActionService.Area, id = str_text });
+
+        return RedirectToAction(ActionService.Search, "Tracing", new { area = ActionService.Area, id = "" });
     }
 
     /// <summary>
     /// 檢驗中心
     /// </summary>
-    /// <returns></returns> 
+    /// <returns></returns>
     public IActionResult Tester()
     {
         return View();

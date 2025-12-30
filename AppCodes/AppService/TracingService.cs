@@ -115,7 +115,7 @@ public class TracingService : BaseClass
     public string CheckTracingCode(string tracingCode)
     {
         string errorMessage = string.Empty;
-        if (!string.IsNullOrEmpty(errorMessage))
+        if (string.IsNullOrEmpty(tracingCode))
         {
             return "請輸入溯源碼";
         }

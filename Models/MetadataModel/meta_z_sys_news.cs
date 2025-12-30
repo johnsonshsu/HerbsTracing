@@ -1,7 +1,7 @@
 
 namespace herbstracing.Models
 {
-    [ModelMetadataType(typeof(meta_z_sys_news))]
+    [ModelMetadataType(typeof(metaz_sys_news))]
     public partial class z_sys_news
     {
         [NotMapped]
@@ -13,7 +13,7 @@ namespace herbstracing.Models
     }
 }
 
-public class meta_z_sys_news
+public class metaz_sys_news
 {
     [Key]
     public string rowid { get; set; } = null!;

@@ -56,6 +56,27 @@ LEFT OUTER JOIN z_bas_vendor ON z_qcm_environment.user_no = z_bas_vendor.mno
             return model;
         }
 
+        public List<z_qcm_environment> GetUserPlaceDataList(string userNo ,  string placeNo , string searchString = "")
+        {
+            List<string> searchColumns = GetSearchColumns();
+            var model = new List<z_qcm_environment>();
+            string sql_query = GetSQLSelect();
+            string sql_where = " WHERE z_qcm_environment.user_no = @user_no AND z_qcm_environment.place_no = @place_no ";
+            sql_query += sql_where;
+            if (!string.IsNullOrEmpty(searchString) && searchColumns.Count() > 0)
+                sql_query += dpr.GetSQLWhereBySearchColumn(EntityObject, searchColumns, sql_where, searchString);
+            sql_query += " ORDER BY z_qcm_environment.mcode ASC , z_qcm_environment.mno DESC ";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("@user_no", userNo);
+            parm.Add("@place_no", placeNo);
+            if (parm.ParameterNames.Count() > 0)
+                model = dpr.ReadAll<z_qcm_environment>(sql_query, parm);
+            else
+                model = dpr.ReadAll<z_qcm_environment>(sql_query);
+            ErrorMessage = dpr.ErrorMessage;
+            return model;
+        }
+
         public override z_qcm_environment GetData(string id)
         {
             string str_query = GetSQLSelect();

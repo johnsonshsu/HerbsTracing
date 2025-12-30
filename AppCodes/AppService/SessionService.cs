@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 /// </summary>
 public static class SessionService
 {
-    #region 基本 Session 設定 
+    #region 基本 Session 設定
     /// <summary>
     /// HttpContextAccessor 物件
     /// </summary>
@@ -262,9 +262,18 @@ public static class SessionService
         set { SetSessionValue<string>("BaseNo", value); }
     }
     /// <summary>
-    /// 選取值
+    /// 主檔名稱
     /// </summary>
     /// <value></value>
+    public static string BaseName
+    {
+        get { return GetSessionValue<string>("BaseName", "").ToString(); }
+        set { SetSessionValue<string>("BaseName", value); }
+    }
+    /// <summary>
+    /// 選取值
+    /// </summary>
+    /// /// <value></value>
     public static string SelectValue
     {
         get { return GetSessionValue<string>("SelectValue", "").ToString(); }
@@ -1135,17 +1144,17 @@ public static class SessionService
     /// <value></value>
     public static string LanguageNo
     {
-        get 
+        get
         {
             string str_value = GetSessionValue<string>("LanguageNo", "").ToString();
             if (string.IsNullOrEmpty(str_value)) str_value = "zh-TW";
-            return str_value; 
+            return str_value;
         }
-        set 
-        { 
+        set
+        {
             string str_value = value;
             if (string.IsNullOrEmpty(str_value)) str_value = "zh-TW";
-            SetSessionValue<string>("LanguageNo", str_value); 
+            SetSessionValue<string>("LanguageNo", str_value);
         }
     }
     #endregion

@@ -217,8 +217,14 @@ app.UseRouting();
 app.UseStaticFiles();
 
 app.MapControllerRoute(
+    name: "init",
+    pattern: "{controller=Home}/{action=Init}/{id}/{page}");
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 //  .WithStaticAssets();
 
 

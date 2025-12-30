@@ -1,0 +1,73 @@
+@model IEnumerable<herbstracing.Models.z_bas_item>
+
+@{
+    ViewData["Title"] = "料品主檔資料列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.item_image1)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.item_image2)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mcode_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mname)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.munit)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mremark)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @Html.ActionLink("圖片1","PhotoUpload1", ActionService.Controller, new { area = ActionService.Area , id = item.mno} , new { @class = "btn btn-success" } )
+                        @Html.ActionLink("圖片2","PhotoUpload2", ActionService.Controller, new { area = ActionService.Area , id = item.mno} , new { @class = "btn btn-success" } )
+                    </td>
+                    <td>
+                        <img src="@Url.Content(item.item_image1)" alt="圖片1" style="width:100px;height:100px;" />
+                    </td>
+                    <td>
+                        <img src="@Url.Content(item.item_image2)" alt="圖片2" style="width:100px;height:100px;" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mcode_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.munit)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.mremark)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

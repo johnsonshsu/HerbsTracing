@@ -36,6 +36,32 @@ LEFT OUTER JOIN z_bas_vendor ON z_bas_contract.user_no = z_bas_vendor.mno
             return str_query;
         }
 
+        /// <summary>
+        /// 取得多筆資料(同步呼叫)
+        /// </summary>
+        /// <param name="searchString">模糊搜尋文字</param>
+        /// <returns></returns>
+        public List<z_bas_contract> GetUnConfirmDataList(string searchString)
+        {
+            DynamicParameters parm = new DynamicParameters();
+            List<string> searchColumns = GetSearchColumns();
+            var model = new List<z_bas_contract>();
+            string sql_query = GetSQLSelect();
+            string sql_where = " WHERE z_bas_contract.isconfirm = @isconfirm AND z_bas_contract.isclose = @isclose ";
+            sql_query += sql_where;
+            if (!string.IsNullOrEmpty(searchString) && searchColumns.Count() > 0)
+                sql_query += dpr.GetSQLWhereBySearchColumn(EntityObject, searchColumns, sql_where, searchString);
+            sql_query += GetSQLOrderBy();
+            parm.Add("@isconfirm", "False");
+            parm.Add("@isclose", "False");
+            if (parm.ParameterNames.Count() > 0)
+                model = dpr.ReadAll<z_bas_contract>(sql_query, parm);
+            else
+                model = dpr.ReadAll<z_bas_contract>(sql_query);
+            ErrorMessage = dpr.ErrorMessage;
+            return model;
+        }
+
         public List<z_bas_contract> GetUserContractList(string userNo ,string searchText = "")
         {
             var models = GetDataList(searchText);
@@ -64,6 +90,18 @@ LEFT OUTER JOIN z_bas_vendor ON z_bas_contract.user_no = z_bas_vendor.mno
             if (model == null) return;
             TracingService.VendorNo = model.user_no;
             TracingService.PlaceNo = model.place_no;
+        }
+
+        public string UpdateConfirm(string id , bool isConfirm)
+        {
+            string confirmValue = isConfirm ? "True" : "False";
+            string str_query = "UPDATE z_bas_contract SET isconfirm = @isconfirm WHERE rowid = @rowid";
+            DynamicParameters parm = new DynamicParameters();
+            parm.Add("rowid", id);
+            parm.Add("isconfirm", confirmValue);
+            dpr.Execute(str_query, parm);
+            ErrorMessage = dpr.ErrorMessage;
+            return ErrorMessage;
         }
     }
 }

@@ -1,0 +1,143 @@
+@model IEnumerable<herbstracing.Models.z_bas_contract>
+
+@{
+    ViewData["Title"] = "農戶待審核合約資料列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.place_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.place_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.item_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.item_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.lot_no)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate1)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mdate2)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @Html.ActionLink("明細", ActionService.Detail, ActionService.Controller, new { area = ActionService.Area , id=item.rowid }, new { @class = "btn btn-primary" })
+                        <input type="button" id="@ActionService.Confirm" value="審核通過"
+                            class="btn btn-danger" onclick="ConfirmData('@ActionService.RowId' , '@ActionService.RowData' )" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.place_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.place_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.item_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.item_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.lot_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate1)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mdate2)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.remark)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function ConfirmData(id, data) {
+            var message = '確認要審核通過';
+            if (!!data) {
+                message += ' [' + data + '] ?'
+            }
+            else {
+                message += '此筆資料?'
+            }
+
+            Swal.fire({
+                title: "<strong>您確定要審核通過?</strong>",
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                focusConfirm: false,
+                closeOnConfirm: false,
+                confirmButtonText: '<i class="fas fa-check pe-2"></i>確定',
+                cancelButtonText: '<i class="fas fa-times pe-2"></i>取消',
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "@ActionService.CurrentActionLinkUrl("ConfirmRow")",
+                        data: { "id": id },
+                        type: "POST",
+                        dataType: "json",
+                    }).done(function (value) {
+                        if (value.Mode == true) {
+                            Swal.fire({
+                                title: "<strong>提示訊息</strong>",
+                                text: value.Message,
+                                icon: 'success',
+                                timer: 3000,
+                            }).then(function (result) {
+                                location.reload(true);
+                            });
+                        }
+                        else {
+                            Swal.fire('錯誤訊息', value.Message, 'error');
+                        }
+                    }).fail(function (err) {
+                        Swal.fire('錯誤訊息', err, 'error');
+                        console.log(err);
+                    });
+                }
+            });
+        }
+    </script>
+}

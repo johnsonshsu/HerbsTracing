@@ -86,8 +86,10 @@ namespace HerbsTracing.Controllers
             if (string.IsNullOrEmpty(id) || id == "0")
             {
                 //新增預設值
-                model.rowid = ""; //主鍵
-             }
+                model.rowid = "0"; //主鍵
+                model.form_no = SessionService.BaseNo;
+                model.plot_no = SessionService.CategoryNo;
+            }
             else
             {
                 //取得新增或修改的員工資料結構及資料
@@ -109,11 +111,8 @@ namespace HerbsTracing.Controllers
             if (!ModelState.IsValid) return View(model);
             //執行新增或修改資料
             using var sqlData = new sql_z_qcm_finish_bom();
-            int rowId = string.IsNullOrEmpty(model.rowid.ToString()) ? 0 : 1;
-            if (rowId == 0)
-            {
-                model.rowid = Guid.NewGuid().ToString(); ; //主鍵
-            }
+            int rowId = string.IsNullOrEmpty(model.rowid) || model.rowid  == "0" ? 0 : 1;
+            if (rowId == 0) model.rowid = Guid.NewGuid().ToString(); ; //主鍵
             model.form_no = SessionService.BaseNo;
             model.plot_no = SessionService.CategoryNo;
             sqlData.CreateEdit(model, rowId);

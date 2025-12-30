@@ -16,7 +16,7 @@ namespace herbstracing.Models
             }
         }
         [NotMapped]
-        [Display(Name = "廠商類別")]
+        [Display(Name = "類別名稱")]
         public string? mcode_name
         {
             get
@@ -38,14 +38,14 @@ public partial class metaz_bas_vendor
 {
     [Key]
     public string rowid { get; set; } = null!;
-    [Display(Name = "廠商編號")]
+    [Display(Name = "編號")]
     public string mno { get; set; } = null!;
-    [Display(Name = "廠商類別")]
+    [Display(Name = "類別")]
     public string? mcode { get; set; }
-    [Display(Name = "廠商名稱")]
+    [Display(Name = "名稱")]
     [Required(ErrorMessage = "{0} 為必填欄位")]
     public string? mname { get; set; }
-    [Display(Name = "廠商地區")]
+    [Display(Name = "地區")]
     public string? marea { get; set; }
     [Display(Name = "統一編號")]
     public string? mserialno { get; set; }

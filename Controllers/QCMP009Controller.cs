@@ -87,7 +87,7 @@ namespace HerbsTracing.Controllers
             if (string.IsNullOrEmpty(id) || id == "0")
             {
                 //新增預設值
-                model.rowid = "";
+                model.rowid = "0";
                 model.mno = "";
             }
             else
@@ -111,11 +111,8 @@ namespace HerbsTracing.Controllers
             if (!ModelState.IsValid) return View(model);
             //執行新增或修改資料
             using var sqlData = new sql_z_bas_item();
-            int rowId = string.IsNullOrEmpty(model.rowid.ToString()) ? 0 : 1;
-            if (rowId == 0)
-            {
-                model.rowid = Guid.NewGuid().ToString();
-            }
+            int rowId = string.IsNullOrEmpty(model.rowid) || model.rowid == "0" ? 0 : 1;
+            if (rowId == 0) model.rowid = Guid.NewGuid().ToString();
             sqlData.CreateEdit(model, rowId);
             //返回員工資料列表
             return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });

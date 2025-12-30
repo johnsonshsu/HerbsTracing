@@ -3,7 +3,18 @@ namespace herbstracing.Models
     [ModelMetadataType(typeof(metaz_qcm_item_testitem))]
     public partial class z_qcm_item_testitem
     {
-
+        [NotMapped]
+        [Display(Name = "DETERMINATION")]
+        public string? test_ename { get; set; }
+        [NotMapped]
+        [Display(Name = "SPECIFICATIONS")]
+        public string? test_ebase { get; set; }
+        [NotMapped]
+        [Display(Name = "UNIT")]
+        public string? test_eunit { get; set; }
+        [NotMapped]
+        [Display(Name = "RESULT")]
+        public string? test_eresult { get; set; }
     }
 }
 

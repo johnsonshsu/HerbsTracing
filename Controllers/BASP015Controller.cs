@@ -1,32 +1,179 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace HerbsTracing.Controllers
 {
-    [Route("[controller]")]
     public class BASP015Controller : Controller
     {
-        private readonly ILogger<BASP015Controller> _logger;
-
-        public BASP015Controller(ILogger<BASP015Controller> logger)
+        /// <summary>
+        /// 資料初始事件
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Init()
         {
-            _logger = logger;
+            //這裏可以寫入初始程式
+            SessionService.PrgNo = "BASP015"; //預設程式編號
+            SessionService.PrgName = "HPLC照片維護"; //預設程式名稱
+            SessionService.PageMasterSize = 10; //預設表頭每頁筆數
+            SessionService.SearchText = "";
+            SessionService.SortColumn = "z_bas_pHPLC.mno";
+            SessionService.SortDirection = "ASC";
+            //返回員工列表
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
         }
 
-        public IActionResult Index()
+        /// <summary>
+        /// 資料列表
+        /// </summary>
+        /// <param name="id">目前頁數</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Index(int id = 1)
         {
-            return View();
+            //設定參數
+            int pageSize = 10;
+            //設定目前頁面動作名稱、子動作名稱、動作卡片大小
+            ActionService.SetActionName(enAction.Index);
+            ActionService.SetSubActionName();
+            ActionService.SetActionCardSize(enCardSize.Max);
+            //取得資料列表集合
+            using var sqlData = new sql_z_bas_pHPLC();
+            //農戶(F)且已核准(B)
+            var model = sqlData.GetDataList(SessionService.SearchText).ToPagedList(id, pageSize);
+            ViewBag.PageInfo = $"( {id} / {model.PageCount} )";
+            ViewBag.SearchText = SessionService.SearchText;
+            return View(model);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        /// <summary>
+        /// 資料新增
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Create()
         {
-            return View("Error!");
+            ActionService.SetActionName(enAction.Create);
+            return RedirectToAction(ActionService.CreateEdit, ActionService.Controller, new { area = ActionService.Area, id = "0" });
+        }
+
+        /// <summary>
+        /// 資料修改
+        /// </summary>
+        /// <param name="id">要修改的Key值</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Edit(string id = "")
+        {
+            ActionService.SetActionName(enAction.Edit);
+            return RedirectToAction(ActionService.CreateEdit, ActionService.Controller, new { area = ActionService.Area, id = id });
+        }
+
+        /// <summary>
+        /// 資料新增或修改輸入 (id = 0 為新增 , id > 0 為修改)
+        /// </summary>
+        /// <param name="id">要修改的Key值</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult CreateEdit(string id = "")
+        {
+            //設定目前頁面子動作名稱、動作卡片大小
+            ActionService.SetSubActionName();
+            ActionService.SetActionCardSize(enCardSize.Medium);
+            var model = new z_bas_pHPLC();
+            if (string.IsNullOrEmpty(id) || id == "0")
+            {
+                //新增預設值
+
+            }
+            else
+            {
+                //取得新增或修改的員工資料結構及資料
+                using var sqlData = new sql_z_bas_pHPLC();
+                int rowid = int.Parse(id);
+                model = sqlData.GetData(rowid);
+            }
+            return View(model);
+        }
+
+        /// <summary>
+        /// 資料新增或修改存檔
+        /// </summary>
+        /// <param name="model">使用者輸入的資料模型</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult CreateEdit(z_bas_pHPLC model)
+        {
+            //檢查是否有違反 Metadata 中的 Validation 驗證
+            ModelState.Remove("mno");
+            ModelState.Remove("rowid");
+            if (!ModelState.IsValid) return View(model);
+            //執行新增或修改資料
+            using var sqlData = new sql_z_bas_pHPLC();
+            sqlData.CreateEdit(model, model.rowid);
+            //返回員工資料列表
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 資料刪除
+        /// </summary>
+        /// <param name="id">要刪除的Key值</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Delete(string id = "")
+        {
+            //執行刪除資料
+            using var sqlData = new sql_z_bas_pHPLC();
+            sqlData.Delete(id);
+            //返回員工資料列表
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 資料刪除
+        /// </summary>
+        /// <param name="id">要刪除的Key值</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult DeleteRow(string id = "")
+        {
+            using var sqlData = new sql_z_bas_pHPLC();
+            sqlData.Delete(id);
+            var result = new dmJsonMessage() { Mode = true, Message = "資料已刪除!!" };
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 查詢
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Search()
+        {
+            object obj_text = Request.Form["SearchText"];
+            SessionService.SearchText = (obj_text == null) ? string.Empty : obj_text.ToString();
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
+        }
+
+        /// <summary>
+        /// 欄位排序
+        /// </summary>
+        /// <param name="id">指定排序的欄位</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Sort(string id)
+        {
+            if (SessionService.SortColumn == id)
+            {
+                SessionService.SortDirection = (SessionService.SortDirection == "asc") ? "desc" : "asc";
+            }
+            else
+            {
+                SessionService.SortColumn = id;
+                SessionService.SortDirection = "asc";
+            }
+            return RedirectToAction(ActionService.Index, ActionService.Controller, new { area = ActionService.Area });
         }
     }
 }

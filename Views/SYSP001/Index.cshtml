@@ -1,0 +1,66 @@
+@model IEnumerable<herbstracing.Models.z_sys_application>
+
+@{
+    ViewData["Title"] = "系統名稱資料維護";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.app_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.app_version)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.footer1)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.footer2)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.footer3)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.rowid}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.app_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.app_version)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.footer1)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.footer2)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.footer3)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.remark)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

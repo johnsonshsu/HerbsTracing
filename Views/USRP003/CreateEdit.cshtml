@@ -1,0 +1,88 @@
+@model herbstracing.Models.z_sys_security
+
+@{
+    string str_command = (string.IsNullOrEmpty(Model.rowid) || Model.rowid == "0") ? "新增" : "修改";
+    string str_user = $"{SessionService.StringValue2} {SessionService.StringValue3}";
+    ViewData["Title"] = $"帳號：{str_user} 權限{str_command}";
+    Layout = "_LayoutAdmin";
+    using var prg = new sql_z_sys_program();
+    var prgList = prg.GetEnabledDataList("").Select(item => new SelectListItem { Value = item.mno, Text = item.mno + ' ' + item.mname }).ToList();
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal  mt-2">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.rowid)
+        @Html.HiddenFor(model => model.user_no)
+        @Html.HiddenFor(model => model.prg_name)
+        @Html.HiddenFor(model => model.module_no)
+
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.prg_no, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.prg_no, prgList, new { @class = "form-control selectpicker", @data_live_search = "true" })
+                @Html.ValidationMessageFor(model => model.prg_no, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.is_enabled, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.is_enabled, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.is_enabled, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.is_add, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.is_add, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.is_add, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.is_edit, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.is_edit, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.is_edit, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.is_delete, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.is_delete, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.is_delete, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.is_print, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.is_print, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.is_print, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.is_confirm, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.is_confirm, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.is_confirm, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PartialSubmit")
+}

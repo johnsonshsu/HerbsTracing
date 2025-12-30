@@ -1,0 +1,44 @@
+@model IEnumerable<herbstracing.Models.z_bas_pHPLC>
+
+@{
+    ViewData["Title"] = "HPLC照片資料列表";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.z_bas_item_bom_no)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid.ToString();
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.z_bas_item_bom_no)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

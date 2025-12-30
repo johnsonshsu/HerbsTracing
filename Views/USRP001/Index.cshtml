@@ -1,0 +1,95 @@
+@model IEnumerable<herbstracing.Models.z_sys_user>
+
+@{
+    ViewData["Title"] = "登入帳號資料維護";
+    Layout = "_LayoutAdmin";
+}
+
+@await Html.PartialAsync("_PartialHeader")
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>
+                    @await Html.PartialAsync("_PartialCreate")
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mname)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.role_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mcode_name)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.orgno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.mpassword)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.msex)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.memail)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.userno)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.isenable)
+                </th>
+                <th>
+                    @Html.DisplayNameSortFor(model => model.remark)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                ActionService.RowId = item.rowid;
+                ActionService.RowData = $"{item.mno}";
+                <tr>
+                    <td>
+                        @await Html.PartialAsync("_PartialEdit")
+                        @await Html.PartialAsync("_PartialDelete")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.role_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mcode_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.orgno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.mpassword)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.msex)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.userno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.isenable)
+                    </td>
+                    <td class="table-wrap">
+                        @Html.DisplayFor(modelItem => item.remark)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

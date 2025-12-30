@@ -1,0 +1,119 @@
+@model herbstracing.Models.z_bas_contract
+
+@{
+    string str_command = (string.IsNullOrEmpty(Model.rowid) || Model.rowid == "0") ? "新增" : "修改";
+    ViewData["Title"] = $"農戶合約資料{str_command}";
+    Layout = "_LayoutAdmin";
+    using var placeData = new sql_z_bas_place();
+    using var itemData = new sql_z_bas_item();
+    var placeList = placeData.GetVendorPlaceList(SessionService.BaseNo)
+        .Select(x => new SelectListItem
+        {
+            Value = x.mno,
+            Text = x.mname
+        })
+        .ToList();
+    var itemList = itemData.GetDropDownList(true);
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal  mt-2">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.rowid)
+
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.mno, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.mno, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.mno, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.place_name, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.place_no, placeList , new { @class = "form-control selectpicker" ,@data_live_search = "true" })
+                @Html.ValidationMessageFor(model => model.place_no, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.item_name, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.item_no, itemList , new { @class = "form-control selectpicker" , @data_live_search = "true" })
+                @Html.ValidationMessageFor(model => model.item_no, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.lot_no, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.lot_no, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.lot_no, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.mdate, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.mdate, new { htmlAttributes = new { @class = "form-control datepicker" , @type = "text" } })
+                @Html.ValidationMessageFor(model => model.mdate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.mdate1, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.mdate1, new { htmlAttributes = new { @class = "form-control datepicker" , @type = "text" } })
+                @Html.ValidationMessageFor(model => model.mdate1, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.mdate2, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.mdate2, new { htmlAttributes = new { @class = "form-control datepicker" , @type = "text" } })
+                @Html.ValidationMessageFor(model => model.mdate2, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.isconfirm, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.isconfirm, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.isconfirm, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.isclose, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.isclose, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.isclose, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.remark, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.remark, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.remark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PartialSubmit")
+}

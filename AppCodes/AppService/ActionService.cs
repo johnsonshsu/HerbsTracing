@@ -277,7 +277,10 @@ public static class ActionService
             return str_value;
         }
         set
-        { _context?.Session.Set<string>("RowId", value.ToString()); }
+        {
+            string str_value = (value == null) ? "" : value.ToString();
+            _context?.Session.Set<string>("RowId", str_value);
+        }
     }
     /// <summary>
     /// Row Data

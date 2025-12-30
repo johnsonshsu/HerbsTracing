@@ -1,0 +1,61 @@
+@model herbstracing.Models.z_bas_video
+
+@{
+    string str_command = (string.IsNullOrEmpty(Model.rowid) || Model.rowid == "0") ? "新增" : "修改";
+    ViewData["Title"] = $"影片基本資料{str_command}";
+    Layout = "_LayoutAdmin";
+    var sexList = new List<SelectListItem>{
+new SelectListItem { Text = "男", Value = "M" },
+new SelectListItem { Text = "女", Value = "F" }};
+
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal  mt-2">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.rowid)
+        @Html.HiddenFor(model => model.mcode)
+        @Html.HiddenFor(model => model.isenabled)
+
+        <div class="row form-group">
+            <div class="col-md-2">
+                @Html.LabelFor(model => model.misenabled, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.misenabled, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.misenabled, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-2">
+            @Html.LabelFor(model => model.mdate, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.mdate, new { htmlAttributes = new { @class = "form-control datepicker" , @type="text"} })
+            @Html.ValidationMessageFor(model => model.mdate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-2">
+            @Html.LabelFor(model => model.mfile, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.mfile, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.mfile, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-2">
+            @Html.LabelFor(model => model.mtitle, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.mtitle, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.mtitle, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_PartialSubmit")
+}

@@ -23,8 +23,9 @@ namespace herbstracing.Models
         public override string GetSQLSelect()
         {
             string str_query = @"
-SELECT z_bas_video.rowid , z_bas_video.mcode , z_bas_video.mdate ,  
-z_bas_video.mtitle , z_bas_video.mfile , z_bas_video.isenabled  
+SELECT z_bas_video.rowid , z_bas_video.mcode , z_bas_video.mdate ,
+z_bas_video.mtitle , z_bas_video.mfile , z_bas_video.isenabled ,
+CASE WHEN z_bas_video.isenabled = 'True' THEN 1 ELSE 0 END AS misenabled
 FROM z_bas_video
 ";
             return str_query;
@@ -33,9 +34,9 @@ FROM z_bas_video
         public override z_bas_video GetData(string id)
         {
             string str_query = GetSQLSelect();
-            str_query += " WHERE z_bas_video.rowid = @id";
+            str_query += " WHERE z_bas_video.rowid = @rowid";
             DynamicParameters parm = new DynamicParameters();
-            parm.Add("id", id);
+            parm.Add("rowid", id);
             var model = dpr.ReadSingle<z_bas_video>(str_query, parm);
             return model;
         }

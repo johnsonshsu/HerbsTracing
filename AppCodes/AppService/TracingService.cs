@@ -86,8 +86,14 @@ public class TracingService : BaseClass
         {
             if (TracingCode.Length == 22)
                 return TracingCode.Substring(TracingCode.Length - 3, 3);
-            else
+            else if (TracingCode.Length == 24)
                 return TracingCode.Substring(TracingCode.Length - 5, 5);
+            else if (TracingCode.Length == 38)
+                return TracingCode.Substring(TracingCode.Length - 8, 3);
+            else if (TracingCode.Length == 40)
+                return TracingCode.Substring(TracingCode.Length - 10, 5);
+            else
+                return "";
         }
     }
     /// <summary>
@@ -120,13 +126,16 @@ public class TracingService : BaseClass
             return "請輸入溯源碼";
         }
         //追溯源人工輸入查詢：新舊模式都要留
-        //舊：國際碼13碼+保期6碼(yymmdd)+批號3碼 → 4715688118720270901401
-        //新：國際碼13碼+保期6碼(yymmdd)+批號5碼 → 471568811872027090125001
-        if (tracingCode.Length != 24 && tracingCode.Length != 22)
+        //舊：國際碼13碼 + 保期6碼(yymmdd) + 批號3碼 → 4715688118720270901401
+        //新：國際碼13碼 + 保期6碼(yymmdd)  + 批號5碼 → 471568811872027090125001
+        //舊：國際碼13碼 + 保期8碼(yyyymmdd) + 產品號9碼 + 批號3碼 + 序列碼5碼 → 47156881187202027090100000703A40122222
+        //新：國際碼13碼 + 保期8碼(yyyymmdd) + 產品號9碼 + 批號5碼 + 序列碼5碼 → 47156881187202027090100000703A2500122222
+        if (tracingCode.Length != 24 && tracingCode.Length != 22 && tracingCode.Length != 38 && tracingCode.Length != 40)
         {
             return "溯源碼長度錯誤，請重新輸入";
         }
         TracingCode = tracingCode;
+        string serno = SerialNo;
         return string.Empty;
     }
     /// <summary>
